@@ -60,7 +60,13 @@ async function sendToDiscord(message: string): Promise<void> {
   // Add message to queue
   messageQueue.push(message)
 }
-
+function sanitizeDiscordInput(name: string): string {
+  return name
+    .replace(/@everyone/g, '@\u200Beveryone')
+    .replace(/@here/g, '@\u200Bhere')
+    .replace(/@/g, '@\u200B') // escape other @
+    .replace(/([_*~`>|])/g, '\\$1'); // escape markdown
+}
 // Function to process the message queue and send batched messages
 async function processMessageQueue(): Promise<void> {
   // If queue is empty or already processing, do nothing
@@ -79,21 +85,26 @@ async function processMessageQueue(): Promise<void> {
     const content = messagesToSend.join('\n')
     console.log(`Sending batch of ${messagesToSend.length} messages to Discord`)
 
-    const payload = {
-      content,
-    }
 
     console.log('SENDING', content)
     if (!webhookUrl) {
       console.error('Error: DISCORD_WEBHOOK_URL environment variable is not set')
       process.exit(1)
     }
-    await fetch(webhookUrl, {
+    const embed = {
+      title: 'NotBlox',
+      description: sanitizeDiscordInput(content),
+      color: 0x00ff00, 
+    }
+
+    const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        embeds: [embed],
+      }),
     })
   } catch (error) {
     console.error('Error sending batched messages to Discord:', error)
