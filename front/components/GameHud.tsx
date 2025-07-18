@@ -2,7 +2,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Joystick } from 'react-joystick-component'
 import { Game } from '@/game/Game'
-import Link from 'next/link'
 import { SerializedMessageType } from '@shared/network/server/serialized'
 import { MessageComponent } from '@shared/component/MessageComponent'
 import { Maximize } from 'lucide-react'
