@@ -12,7 +12,10 @@ export default function RootLayout({
       <meta property="og:type" content="website" />
       <meta property="og:title" content="3D Game on 𝕏 (Notblox.online)" />
       <meta property="og:description" content="3D Multiplayer Game - click to interact!" />
-      <meta property="og:url" content="https://www.notblox.online/" />
+      <meta
+        property="og:url"
+        content="https://notblox-git-twitter-fullscreen-iercann-s-team.vercel.app/"
+      />
       <meta property="og:image" content="https://www.notblox.online/PreviewTestGame.webp" />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
@@ -38,12 +41,18 @@ export default function RootLayout({
       <meta name="twitter:site" content="@iercan" />
       <meta name="twitter:title" content="3D Multiplayer Game on 𝕏 (iercan_)" />
       <meta name="twitter:description" content="3D Multiplayer Game - click to interact!" />
-      <meta name="twitter:url" content="https://www.notblox.online/" />
-      <meta name="twitter:image" content="https://www.notblox.online/PreviewTestGame.webp" />
-      <meta name="twitter:image:width" content="1200" />
-      <meta name="twitter:image:height" content="630" />
+      <meta
+        name="twitter:url"
+        content="https://notblox-git-twitter-fullscreen-iercann-s-team.vercel.app/"
+      />
+      <meta name="twitter:image" content="/thumb.jpg" />
+      <meta name="twitter:image:width" content="643" />
+      <meta name="twitter:image:height" content="643" />
       <meta name="twitter:image:alt" content="3D Multiplayer Demo" />
-      <meta name="twitter:player" content="https://www.notblox.online/" />
+      <meta
+        name="twitter:player"
+        content="https://notblox-git-twitter-fullscreen-iercann-s-team.vercel.app/"
+      />
       <meta name="twitter:player:width" content="480" />
       <meta name="twitter:player:height" content="480" />
       <meta name="twitter:app:name:iphone" content="iErcan" />
