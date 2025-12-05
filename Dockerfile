@@ -1,18 +1,18 @@
 # Build stage
-FROM node:22-slim as build
+FROM node:22 AS build
 
 WORKDIR /app
 
-COPY . .
+# Copy only necessary files for build
+COPY back/package*.json ./back/
+COPY shared ./shared/
 
 WORKDIR /app/back
 
-# Install build tools for native dependencies  
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+RUN npm ci
 
-RUN npm install
+COPY back ./
+
 RUN npm run build
 
 # Production stage
@@ -20,16 +20,14 @@ FROM node:22-slim
 
 WORKDIR /app/back
 
-# Install only runtime dependencies
-RUN apt-get update && apt-get install -y git \
-    && rm -rf /var/lib/apt/lists/*
+# Copy package files
+COPY --from=build /app/back/package*.json ./
 
-COPY --from=build /app/back/package.json .
+# Install production dependencies only
+RUN npm ci --omit=dev
 
-RUN npm install --omit=dev
-
-COPY --from=build /app/back/src/scripts /app/back/src/scripts
-COPY --from=build /app/back/dist /app/back/dist
-COPY --from=build /app/back/.env .
+# Copy built files and scripts
+COPY --from=build /app/back/dist ./dist
+COPY --from=build /app/back/src/scripts ./src/scripts
 
 CMD ["node", "dist/back/src/sandbox.js"]
