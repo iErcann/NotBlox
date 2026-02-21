@@ -1,8 +1,9 @@
 {
   "name": "notblox.online",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "NotBlox game server backend",
+  "main": "dist/back/src/sandbox.js",
+  "type": "module",
   "scripts": {
     "debug": "tsc-watch --onSuccess \"node --inspect=7000  dist/back/src/sandbox.js\"",
     "dev": "tsc-watch --onSuccess \"node  dist/back/src/sandbox.js\"",
@@ -11,36 +12,36 @@
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix"
   },
-  "keywords": [],
   "author": "iercann",
   "license": "ISC",
   "engines": {
     "node": ">=24"
   },
-  "devDependencies": {
-    "@eslint/js": "^9.3.0",
-    "@types/uws": "^0.13.6",
-    "@typescript-eslint/eslint-plugin": "^8.29.0",
-    "@typescript-eslint/parser": "^8.29.0",
-    "eslint": "^8.57.0",
-    "globals": "^15.3.0",
-    "tsc-watch": "^6.2.0",
-    "tsconfig-paths": "^4.2.0",
-    "typescript-eslint": "^8.29.0"
+  "overrides": {
+    "minimatch": "^10.2.1"
   },
-  "type": "module",
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.14.0",
-    "@types/node": "^22.10.1",
-    "@types/pako": "^2.0.3",
-    "@types/three": "^0.172.0",
     "dotenv": "^16.3.1",
     "msgpackr": "^1.9.9",
     "node-three-gltf": "^1.8.3",
     "pako": "^2.1.0",
     "rate-limiter-flexible": "^5.0.3",
     "three": "^0.172.0",
-    "typescript": "^5.7.3",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.57.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/pako": "^2.0.3",
+    "@types/three": "^0.172.0",
+    "@types/uws": "^0.13.6",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "eslint": "latest",
+    "globals": "latest",
+    "tsc-watch": "^6.2.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "latest"
   }
 }
