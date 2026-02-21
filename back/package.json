@@ -14,6 +14,9 @@
   "keywords": [],
   "author": "iercann",
   "license": "ISC",
+  "engines": {
+    "node": ">=24"
+  },
   "devDependencies": {
     "@eslint/js": "^9.3.0",
     "@types/uws": "^0.13.6",
@@ -38,6 +41,6 @@
     "rate-limiter-flexible": "^5.0.3",
     "three": "^0.172.0",
     "typescript": "^5.7.3",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#binaries"
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.57.0"
   }
 }

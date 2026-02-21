@@ -1,5 +1,5 @@
 # Build stage
-FROM node:22 AS build
+FROM node:24 AS build
 
 WORKDIR /app
 
@@ -16,7 +16,8 @@ COPY back ./
 RUN npm run build
 
 # Production stage
-FROM node:22-slim
+# uWebSockets.js requires glibc ≥ 2.38 -> Debian Trixie	 
+FROM node:24-trixie-slim
 
 WORKDIR /app/back
 

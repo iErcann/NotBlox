@@ -2,6 +2,9 @@
   "name": "NotBlox",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "concurrently \"next dev -p 4000\" \"serve -s public/assets -l 4001 --cors\"",
     "build": "next build",
