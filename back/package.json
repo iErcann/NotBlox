@@ -1,12 +1,13 @@
 {
-  "name": "notblox.online",
+  "name": "@notblox/back",
   "version": "1.0.0",
   "description": "NotBlox game server backend",
   "main": "dist/back/src/sandbox.js",
   "type": "module",
+  "private": true,
   "scripts": {
-    "debug": "tsc-watch --onSuccess \"node --inspect=7000  dist/back/src/sandbox.js\"",
-    "dev": "tsc-watch --onSuccess \"node  dist/back/src/sandbox.js\"",
+    "debug": "tsc-watch --project tsconfig.json --onSuccess \"node --inspect=7000 dist/back/src/sandbox.js\"",
+    "dev": "tsc-watch --project tsconfig.json --onSuccess \"node dist/back/src/sandbox.js\"",
     "build": "tsc --build tsconfig.json",
     "start": "node dist/back/src/sandbox.js",
     "lint": "eslint src/**/*.ts",
@@ -21,19 +22,20 @@
     "minimatch": "^10.2.1"
   },
   "dependencies": {
+    "@notblox/shared": "workspace:*",
     "@dimforge/rapier3d-compat": "^0.14.0",
     "dotenv": "^16.3.1",
     "msgpackr": "^1.9.9",
     "node-three-gltf": "^1.8.3",
     "pako": "^2.1.0",
     "rate-limiter-flexible": "^5.0.3",
-    "three": "^0.172.0",
+    "three": "^0.183.0",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.57.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
     "@types/pako": "^2.0.3",
-    "@types/three": "^0.172.0",
+    "@types/three": "^0.183.0",
     "@types/uws": "^0.13.6",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",

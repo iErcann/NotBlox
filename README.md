@@ -73,7 +73,10 @@ Inspiration : https://github.com/swift502/Sketchbook
 
 ## How to run locally
 
-**Prerequisites:** You must use **Node.js v24 or higher**. This project relies on `uWebSockets.js` for the backend, which strictly requires modern Node.js versions. We recommend using `nvm` to manage your Node versions.
+**Prerequisites:**
+
+- **Node.js v24+** — required by `uWebSockets.js`. Use [`nvm`](https://github.com/nvm-sh/nvm) to manage versions.
+- **pnpm** — this is a monorepo. Install it with `npm i -g pnpm` if you don't have it.
 
 ### Clone the repo
 
@@ -82,20 +85,23 @@ git clone https://github.com/iErcann/Notblox.git
 cd Notblox
 ```
 
-### Back-end
+### Install all packages
 
 ```bash
-  cd back
-  npm install
-  npm run dev
+pnpm install
 ```
 
-### Front-end
+### Run everything (back + front + shared watch)
 
 ```bash
-  cd front
-  npm install
-  npm run dev
+pnpm run dev
+```
+
+### Or run individually
+
+```bash
+pnpm run dev:back    # game server on ws://localhost:8001
+pnpm run dev:front   # Next.js on http://localhost:4000
 ```
 
 Go on your browser to http://localhost:4000/play/test

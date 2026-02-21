@@ -1,1 +1,6 @@
 data/ 
+node_modules/
+dist/
+build/
+.next/
+out/

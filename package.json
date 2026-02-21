@@ -1,0 +1,23 @@
+{
+  "name": "notblox-mono",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "front",
+    "back"
+  ],
+  "scripts": {
+    "build:shared": "pnpm --filter @notblox/shared run build",
+    "dev:shared": "pnpm --filter @notblox/shared run dev",
+    "build:back": "pnpm --filter @notblox/back run build",
+    "dev:back": "pnpm --filter @notblox/back run dev",
+    "build:front": "pnpm --filter @notblox/front run build",
+    "dev:front": "pnpm --filter @notblox/front run dev",
+    "build-vercel": "pnpm run build:shared && pnpm run build:front",
+    "build": "pnpm run build:shared && pnpm run build:back && pnpm run build:front",
+    "dev": "concurrently \"pnpm run dev:shared\" \"pnpm run dev:back\" \"pnpm run dev:front\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

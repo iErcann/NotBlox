@@ -1,5 +1,5 @@
 {
-  "name": "notblox-front",
+  "name": "@notblox/front",
   "version": "0.1.0",
   "description": "NotBlox game client frontend",
   "author": "iercann",
@@ -9,15 +9,17 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "concurrently \"next dev -p 4000\" \"serve -s public/assets -l 4001 --cors\"",
+    "dev": "next dev -p 4000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "serve": "serve -s public/assets -l 4001 --cors"
   },
   "overrides": {
     "minimatch": "^10.2.1"
   },
   "dependencies": {
+    "@notblox/shared": "workspace:*",
     "@radix-ui/react-slot": "^1.1.1",
     "camera-controls": "^2.8.3",
     "class-variance-authority": "^0.7.1",
