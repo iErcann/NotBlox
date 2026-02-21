@@ -4,3 +4,8 @@ dist/
 build/
 .next/
 out/
+
+# Lockfiles — managed at root by pnpm
+back/package-lock.json
+front/package-lock.json
+shared/package-lock.json

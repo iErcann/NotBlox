@@ -1,34 +1,40 @@
 # Build stage
 FROM node:24 AS build
 
+RUN corepack enable
+
 WORKDIR /app
 
-# Copy only necessary files for build
-COPY back/package*.json ./back/
+# Copy workspace manifests first for better layer caching
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY back/package.json ./back/
+COPY shared/package.json ./shared/
+
+RUN pnpm install --frozen-lockfile
+
+# Copy source
+COPY back ./back/
 COPY shared ./shared/
 
-WORKDIR /app/back
-
-RUN npm ci
-
-COPY back ./
-
-RUN npm run build
+RUN pnpm run build:back
 
 # Production stage
-# uWebSockets.js requires glibc ≥ 2.38 -> Debian Trixie	 
+# uWebSockets.js requires glibc >= 2.38 -> Debian Trixie
 FROM node:24-trixie-slim
 
-WORKDIR /app/back
+RUN corepack enable
 
-# Copy package files
-COPY --from=build /app/back/package*.json ./
+WORKDIR /app
+
+# Copy workspace manifests for production install
+COPY --from=build /app/package.json /app/pnpm-workspace.yaml /app/pnpm-lock.yaml ./
+COPY --from=build /app/back/package.json ./back/
+COPY --from=build /app/shared/package.json ./shared/
 
 # Install production dependencies only
-RUN npm ci --omit=dev
+RUN pnpm install --frozen-lockfile --prod
 
 # Copy built files and scripts
-COPY --from=build /app/back/dist ./dist
-COPY --from=build /app/back/src/scripts ./src/scripts
+COPY --from=build /app/back/dist ./back/dist
 
-CMD ["node", "dist/back/src/sandbox.js"]
+CMD ["node", "back/dist/back/src/sandbox.js"]
