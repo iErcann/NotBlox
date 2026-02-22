@@ -1,33 +1,44 @@
-# Build stage
-FROM node:22 AS build
+# Build stage: only the shared package needs compilation
+FROM node:24 AS build
+
+RUN corepack enable
 
 WORKDIR /app
 
-# Copy only necessary files for build
-COPY back/package*.json ./back/
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY back/package.json ./back/
+COPY shared/package.json ./shared/
+
+RUN pnpm install --frozen-lockfile
+
 COPY shared ./shared/
-
-WORKDIR /app/back
-
-RUN npm ci
-
-COPY back ./
-
-RUN npm run build
+RUN pnpm run build:shared
 
 # Production stage
-FROM node:22-slim
+# uWebSockets.js requires glibc >= 2.38 -> Debian Trixie
+FROM node:24-trixie-slim
 
+RUN corepack enable
+
+WORKDIR /app
+
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY back/package.json ./back/
+COPY shared/package.json ./shared/
+
+# Install production dependencies (includes tsx for runtime TypeScript loading)
+RUN pnpm install --frozen-lockfile --prod
+
+# Copy shared source + compiled dist:
+#   dist/ is needed for @notblox/shared package resolution
+#   source is needed for relative imports inside scripts (e.g. ../../../shared/system/...)
+COPY --from=build /app/shared ./shared/
+
+# Copy back source. tsx loads TypeScript at runtime, no tsc step needed.
+# To swap a script without rebuilding the image, volume-mount the scripts directory:
+#   docker run -v ./my-scripts:/app/back/src/scripts -e GAME_SCRIPT=myGame.ts ...
+COPY back/src ./back/src
+
+# Run from back/ so Node resolves tsx from back/node_modules
 WORKDIR /app/back
-
-# Copy package files
-COPY --from=build /app/back/package*.json ./
-
-# Install production dependencies only
-RUN npm ci --omit=dev
-
-# Copy built files and scripts
-COPY --from=build /app/back/dist ./dist
-COPY --from=build /app/back/src/scripts ./src/scripts
-
-CMD ["node", "dist/back/src/sandbox.js"]
+CMD ["node", "--import", "tsx/esm", "src/sandbox.ts"]

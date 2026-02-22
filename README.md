@@ -1,31 +1,34 @@
 # Three JS Multiplayer Game Demo
 
 Welcome to **Notblox**! This project showcases a simple multiplayer game engine built with Three.js and TypeScript, featuring an Entity Component System (ECS) for efficient network synchronization and utilizing Rapier.js for physics.
- 
-### Online Demo  
 
- 
+### Online Demo
 
-- **Demo link:** [NotBlox.online](https://www.notblox.online/)  
-- Hosted on a European server. Note: There is  no client-side prediction, so the game may feel laggy if you're far from the server.  
+- **Demo link:** [NotBlox.online](https://www.notblox.online/)
+- Hosted on a European server. Note: There is no client-side prediction, so the game may feel laggy if you're far from the server.
 
-#### Test World  
+#### Test World
+
 [Play Test World](https://www.notblox.online/play/test)  
-![Test World](https://github.com/user-attachments/assets/1529df59-f270-4b61-b297-c3269dc38462)  
+![Test World](https://github.com/user-attachments/assets/1529df59-f270-4b61-b297-c3269dc38462)
 
-#### Obby Parkour  
+#### Obby Parkour
+
 [Play Obby Parkour](https://www.notblox.online/play/obby)  
-![Obby Parkour](https://github.com/user-attachments/assets/a55925b3-9a74-4dbe-9fc4-3dca8e65b2c3)  
+![Obby Parkour](https://github.com/user-attachments/assets/a55925b3-9a74-4dbe-9fc4-3dca8e65b2c3)
 
-#### Football  
+#### Football
+
 [Play Football](https://www.notblox.online/play/football)  
-![Football](https://github.com/user-attachments/assets/03d18374-6ba8-4ea4-b11a-4c1406695f34)  
+![Football](https://github.com/user-attachments/assets/03d18374-6ba8-4ea4-b11a-4c1406695f34)
 
---- 
- 
-#### Videos : 
+---
+
+#### Videos :
+
 - Car https://www.youtube.com/watch?v=7eSYb6jKOV0
-- Football https://www.youtube.com/watch?v=tZlNKU_buCQ 
+- Football https://www.youtube.com/watch?v=tZlNKU_buCQ
+
 ### Controls
 
 - W : Forward
@@ -70,52 +73,63 @@ Inspiration : https://github.com/swift502/Sketchbook
 
 ## How to run locally
 
+**Prerequisites:**
+
+- **Node.js v24+** — required by `uWebSockets.js`. Use [`nvm`](https://github.com/nvm-sh/nvm) to manage versions.
+- **pnpm** — this is a monorepo. Install it with `npm i -g pnpm` if you don't have it.
+
 ### Clone the repo
+
 ```bash
 git clone https://github.com/iErcann/Notblox.git
 cd Notblox
 ```
 
-### Back-end
+### Install all packages
 
 ```bash
-  cd back
-  npm install
-  npm run dev
+pnpm install
 ```
 
-### Front-end
+### Run everything (back + front + shared watch)
 
 ```bash
-  cd front
-  npm install
-  npm run dev
+pnpm run dev
 ```
 
-Go on your browser to http://localhost:4000/play/test 
+### Or run individually
+
+```bash
+pnpm run dev:back    # game server on ws://localhost:8001
+pnpm run dev:front   # Next.js on http://localhost:4000
+```
+
+Go on your browser to http://localhost:4000/play/test
 
 ## Backend Configuration (Game Server)
 
 The backend can be configured through environment variables in `./back/.env`:
 
-### Local dev mode 
-```bash
-NODE_ENV=development 
-GAME_TICKRATE=20 # Game tickrate in Hz (20Hz = 50ms)
-GAME_SCRIPT=defaultScript.js # Script to run 
+### Local dev mode
 
-# Commented in dev mode : 
+```bash
+NODE_ENV=development
+GAME_TICKRATE=20 # Game tickrate in Hz (20Hz = 50ms)
+GAME_SCRIPT=defaultScript.ts # Script source file in back/src/scripts/
+
+# Commented in dev mode :
 # FRONTEND_URL=https://www.notblox.online # Only accept connections from this URL
 ```
 
 ### In production
+
 ```bash
-NODE_ENV=production 
+NODE_ENV=production
 GAME_TICKRATE=20 # Game tickrate in Hz (20Hz = 50ms)
-GAME_SCRIPT=defaultScript.js # Script to run 
+GAME_SCRIPT=defaultScript.ts # Script source file in back/src/scripts/
 
 # To prevent hijacking
-FRONTEND_URL=https://www.notblox.online 
+FRONTEND_URL=https://www.notblox.online
 
 # To get WSS, set your path:
 SSL_KEY_FILE=/etc/letsencrypt/live/npm-3/privkey.pem
@@ -123,23 +137,51 @@ SSL_CERT_FILE=/etc/letsencrypt/live/npm-3/cert.pem
 ```
 
 #### Game Scripts
-The `GAME_SCRIPT` system allows for modular gameplay modes similar to Garry's Mod's LUA scripts:
-- Scripts are loaded dynamically at runtime
-- Multiple servers can run different game modes
-- No rebuild required when modifying game logic, just change the `GAME_SCRIPT` variable in the `.env` file and restart
-- Located in `back/src/scripts/`
+
+The `GAME_SCRIPT` system allows for modular gameplay modes similar to Garry's Mod's LUA scripts.
+
+Scripts live in `back/src/scripts/` and are **plain TypeScript source files** loaded at runtime by [`tsx`](https://tsx.is/) — **no compilation step needed**. The Docker image is built once; scripts can be swapped via a volume mount without ever rebuilding.
+
+| Script                  | Description                                                         |
+| ----------------------- | ------------------------------------------------------------------- |
+| `defaultScript.ts`      | Sandbox world: cars, physics cubes, a trampoline, a football        |
+| `footballScript.ts`     | 2-team football match with score, goals, and a kick mechanic        |
+| `parkourScript.ts`      | Obby-style obstacle course with checkpoints                         |
+| `petSimulatorScript.ts` | Pet simulator: hatch eggs, collect pets, leaderboard, coin triggers |
+
+**How it works:**
+
+- `GAME_SCRIPT` in `.env` points to the **source** filename (e.g. `defaultScript.ts`)
+- At startup, `sandbox.ts` dynamically imports the script via `tsx` — TypeScript is stripped/transformed on the fly by Node's tsx loader
+
+**Swapping scripts without rebuilding:**
+
+```bash
+# Mount a local scripts folder over the one baked into the image
+docker run \
+  -v ./my-scripts:/app/back/src/scripts \
+  -e GAME_SCRIPT=myGame.ts \
+  ghcr.io/iercann/notblox-game-server:latest
+```
+
+**Adding a new game mode:**
+
+1. Create `back/src/scripts/myGame.ts` — import ECS entities/components as needed
+2. Set `GAME_SCRIPT=myGame.ts` in `.env`
+3. Run `pnpm run dev:back`
 
 #### Tickrate Configuration
 
 The `GAME_TICKRATE` setting controls how frequently the server updates game state:
 
-| Tickrate | Use Case | Description | Server CPU Usage |
-|----------|----------|-------------|-----------------|
-| 60 ticks/s | Vehicle/Physics-heavy | Smooth physics interactions, highest precision vehicle control | High |
-| 40 ticks/s | Mixed Gameplay | Good physics interactions, balanced vehicle control | Medium |
-| 20 ticks/s | Standard Gameplay | Good balance of responsiveness and performance | Low |
+| Tickrate   | Use Case              | Description                                                    | Server CPU Usage |
+| ---------- | --------------------- | -------------------------------------------------------------- | ---------------- |
+| 60 ticks/s | Vehicle/Physics-heavy | Smooth physics interactions, highest precision vehicle control | High             |
+| 40 ticks/s | Mixed Gameplay        | Good physics interactions, balanced vehicle control            | Medium           |
+| 20 ticks/s | Standard Gameplay     | Good balance of responsiveness and performance                 | Low              |
 
 **Performance Considerations:**
+
 - Higher tickrates = smoother gameplay but increased:
   - Server CPU usage
   - Network bandwidth
@@ -158,12 +200,12 @@ NEXT_PUBLIC_SERVER_URL=ws://localhost
 # Production (SSL Required)
 # NEXT_PUBLIC_SERVER_URL=wss://back.notblox.online
 ```
- 
+
 ## How to change the map
 
 Maps are **GLB/GLTF files**. The back-end approximates a **Trimesh Collider** based on the map, which is rendered on the client.
 
-To change the map, update the URL in `back/src/scripts/defaultScript.js`:
+To change the map, update the URL in `back/src/scripts/defaultScript.ts`:
 
 ```typescript
 new MapWorld('https://notbloxo.fra1.cdn.digitaloceanspaces.com/Notblox-Assets/world/TestWorld.glb') // Change this URL to your map
@@ -180,7 +222,7 @@ You can host your assets for free using **GitHub** and **Githack**. Here's how:
 
 ![Githack](Githack.webp)
 
-Then, update the URL in `defaultScript.js`:
+Then, update the URL in `defaultScript.ts`:
 
 ```typescript
 new MapWorld(
@@ -201,7 +243,7 @@ new MapWorld('http://localhost:4001/BasicWorld.glb')
 Make sure to run the front-end with `npm run dev` to serve the local file.
 
 ### Blender: How to Export a Map Correctly
- 
+
 **Export with Compression**
 
 Choose GLB/GLTF export.

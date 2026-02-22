@@ -1,3 +1,23 @@
+import Rapier from '../physics/rapier.js'
+import { EventSystem } from '../../../shared/system/EventSystem.js'
+import { ColorComponent } from '../../../shared/component/ColorComponent.js'
+import { PlayerComponent } from '../../../shared/component/PlayerComponent.js'
+import { ProximityPromptComponent } from '../../../shared/component/ProximityPromptComponent.js'
+import { TextComponent } from '../../../shared/component/TextComponent.js'
+import { RotationComponent } from '../../../shared/component/RotationComponent.js'
+import { ColorEvent } from '../ecs/component/events/ColorEvent.js'
+import { OnCollisionEnterEvent } from '../ecs/component/events/OnCollisionEnterEvent.js'
+import { DynamicRigidBodyComponent } from '../ecs/component/physics/DynamicRigidBodyComponent.js'
+import { InputComponent } from '../ecs/component/InputComponent.js'
+import { SpawnPositionComponent } from '../ecs/component/SpawnPositionComponent.js'
+import { ZombieComponent } from '../ecs/component/ZombieComponent.js'
+import { Car } from '../ecs/entity/Car.js'
+import { Cube } from '../ecs/entity/Cube.js'
+import { MapWorld } from '../ecs/entity/MapWorld.js'
+import { Mesh } from '../ecs/entity/Mesh.js'
+import { Sphere } from '../ecs/entity/Sphere.js'
+import { TriggerCube } from '../ecs/entity/TriggerCube.js'
+
 function randomHexColor() {
   const hex = Math.floor(Math.random() * 16777215).toString(16)
   return '#' + '0'.repeat(6 - hex.length) + hex
@@ -37,13 +57,9 @@ const triggerCube = new TriggerCube(
     // onEnter callback
     if (entity.getComponent(PlayerComponent)) {
       console.log('Invisible trigger zone: Player entered the zone!')
-      // You could add game logic here, like:
-      // - Giving points
-      // - Triggering events
-      // - Spawning enemies
       entity
-        .getComponent(DynamicRigidBodyComponent)
-        .body.applyImpulse(new Rapier.Vector3(0, 9000, 0), true)
+        .getComponent(DynamicRigidBodyComponent)!
+        .body!.applyImpulse(new Rapier.Vector3(0, 9000, 0), true)
     }
   },
   (entity) => {
@@ -79,7 +95,7 @@ for (let i = 0; i < 2; i++) {
         // Apply upward force
         const rigidBody = interactiveCube.entity.getComponent(DynamicRigidBodyComponent)
         if (rigidBody) {
-          rigidBody.body.applyImpulse(new Rapier.Vector3(0, 5000, 0), true)
+          rigidBody.body!.applyImpulse(new Rapier.Vector3(0, 5000, 0), true)
         }
       }
     })
@@ -108,26 +124,6 @@ zombie.entity.addNetworkComponent(new ColorComponent(zombie.entity.id, 'default'
 zombie.entity.addComponent(new ZombieComponent(zombie.entity.id))
 zombie.entity.addNetworkComponent(new TextComponent(zombie.entity.id, '🤪 Zombie guy', 0, 2, 0))
 
-// === Create Multiple Objects Example ===
-// Creates a line of cubes with alternating colors
-// const colors = ['#ff0000', '#00ff00', '#0000ff']
-// for (let i = 0; i < 2; i++) {
-//   const cubeParams = {
-//     position: { x: i * 3, y: 5, z: -40 },
-//     size: { width: 1, height: 1, depth: 1 },
-//     color: colors[i % colors.length],
-//   }
-//   const cube = new Cube(cubeParams)
-//   cube.entity.addComponent(new RandomizeComponent(cube.entity.id))
-//   const sphereParams = {
-//     position: { x: i * 3, y: 5, z: -40 },
-//     radius: 1,
-//     color: colors[i % colors.length],
-//   }
-//   const sphere = new Sphere(sphereParams)
-//   sphere.entity.addComponent(new RandomizeComponent(sphere.entity.id))
-// }
-
 const cube = new Cube({
   position: {
     x: 100,
@@ -143,12 +139,11 @@ const proximityPromptComponent = new ProximityPromptComponent(cube.entity.id, {
   text: 'Press E to change color',
   onInteract: (interactingEntity) => {
     cube.entity
-      .getComponent(DynamicRigidBodyComponent)
-      .body.applyImpulse(new Rapier.Vector3(0, 5, 0), true)
+      .getComponent(DynamicRigidBodyComponent)!
+      .body!.applyImpulse(new Rapier.Vector3(0, 5, 0), true)
 
     const colorComponent = cube.entity.getComponent(ColorComponent)
     if (colorComponent) {
-      // randomize color
       colorComponent.color = '#' + Math.floor(Math.random() * 16777215).toString(16)
       colorComponent.updated = true
     }
@@ -176,10 +171,8 @@ for (let i = 1; i < 10; i++) {
   const y = 5
   const z = 20 * i
 
-  // Configure wheels with varying sizes
-  let wheelConfig = {}
+  let wheelConfig: Record<string, number> = {}
   if (i < 5) {
-    // Small front wheels for first set of cars
     wheelConfig = {
       frontLeft: Math.max(1, i / 2.5),
       frontRight: Math.max(1, i / 2.5),
@@ -187,7 +180,6 @@ for (let i = 1; i < 10; i++) {
       backRight: 1.4,
     }
   } else {
-    // Small back wheels for second set of cars
     wheelConfig = {
       frontLeft: 1.4,
       frontRight: 1.4,
@@ -214,12 +206,12 @@ const noWheelCar = new Car({
 })
 noWheelCar.entity.addComponent(new SpawnPositionComponent(noWheelCar.entity.id, 250, 20, -500))
 
-const car = new Car({
+const mainCar = new Car({
   position: { x: 0, y: 5, z: -500 },
   name: 'Weird Car',
   meshUrl: 'https://notbloxo.fra1.cdn.digitaloceanspaces.com/Notblox-Assets/vehicle/EzCar.glb',
 })
-car.entity.addComponent(new SpawnPositionComponent(car.entity.id, 150, 20, -500))
+mainCar.entity.addComponent(new SpawnPositionComponent(mainCar.entity.id, 150, 20, -500))
 
 // Flying Car (different gravity scale, slow motion)
 new Car({
@@ -246,7 +238,6 @@ function spawnFootballBall() {
     meshUrl: 'https://notbloxo.fra1.cdn.digitaloceanspaces.com/Notblox-Assets/base/Ball.glb',
     physicsProperties: {
       mass: 1,
-      // Enable continuous collision detection to prevent the ball from going through the walls
       enableCcd: true,
       angularDamping: 0.5,
       linearDamping: 0.5,
@@ -257,9 +248,7 @@ function spawnFootballBall() {
     },
   }
 
-  let ball
-  // Initialize the ball using SphereParams
-  ball = new Sphere(sphereParams)
+  const ball = new Sphere(sphereParams)
   ball.entity.addComponent(
     new SpawnPositionComponent(
       ball.entity.id,
@@ -269,31 +258,47 @@ function spawnFootballBall() {
     )
   )
 
-  const proximityPromptComponent = new ProximityPromptComponent(ball.entity.id, {
+  const ballPrompt = new ProximityPromptComponent(ball.entity.id, {
     text: 'Kick',
     onInteract: (playerEntity) => {
       const ballRigidbody = ball.entity.getComponent(DynamicRigidBodyComponent)
       const playerRotationComponent = playerEntity.getComponent(RotationComponent)
 
       if (ballRigidbody && playerRotationComponent && playerEntity.getComponent(InputComponent)) {
-        // Convert rotation to direction vector
         const direction = playerRotationComponent.getForwardDirection()
-        // Calculate player looking direction
-        // sendChatMessage('⚽', `Player shot the ball !`)
         const playerLookingDirectionVector = new Rapier.Vector3(
           direction.x * 1500,
           0,
           direction.z * 1500
         )
-
-        ballRigidbody.body.applyImpulse(playerLookingDirectionVector, true)
+        ballRigidbody.body!.applyImpulse(playerLookingDirectionVector, true)
       }
     },
     maxInteractDistance: 10,
     interactionCooldown: 2000,
     holdDuration: 0,
   })
-  ball.entity.addNetworkComponent(proximityPromptComponent)
+  ball.entity.addNetworkComponent(ballPrompt)
 }
 
 spawnFootballBall()
+
+// === Create Multiple Objects Example ===
+// Creates a line of cubes with alternating colors
+// const colors = ['#ff0000', '#00ff00', '#0000ff']
+// for (let i = 0; i < 2; i++) {
+//   const cubeParams = {
+//     position: { x: i * 3, y: 5, z: -40 },
+//     size: { width: 1, height: 1, depth: 1 },
+//     color: colors[i % colors.length],
+//   }
+//   const cube = new Cube(cubeParams)
+//   cube.entity.addComponent(new RandomizeComponent(cube.entity.id))
+//   const sphereParams = {
+//     position: { x: i * 3, y: 5, z: -40 },
+//     radius: 1,
+//     color: colors[i % colors.length],
+//   }
+//   const sphere = new Sphere(sphereParams)
+//   sphere.entity.addComponent(new RandomizeComponent(sphere.entity.id))
+// }

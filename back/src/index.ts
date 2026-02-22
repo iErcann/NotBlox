@@ -77,11 +77,14 @@ const followTargetSystem = new FollowTargetSystem()
 new Chat()
 
 const fixedTimestep = 1000 / config.SERVER_TICKRATE
+const LAG_THRESHOLD_MS = fixedTimestep * 1.5 // warn if a frame takes 50% longer than expected
+const LAG_LOG_INTERVAL_MS = 2000 // avoid spamming — at most one warning every 2s
+let lastLagLogTime = 0
 
 let lastFrameTime = Date.now()
-let accumulatedTime = 0
+let accumulator = 0
 
-function atLeastOnePlayerExists() {
+function hasPlayers() {
   const player = EntityManager.getFirstEntityWithComponent(entities, PlayerComponent)
   return player !== undefined
 }
@@ -135,26 +138,39 @@ async function updateGameState(dt: number) {
   eventSystem.afterUpdate(entities)
 }
 
+function checkLag(deltaTime: number) {
+  if (deltaTime <= LAG_THRESHOLD_MS) return
+  const now = Date.now()
+  if (now - lastLagLogTime < LAG_LOG_INTERVAL_MS) return
+  lastLagLogTime = now
+  const catchUpTicks = Math.floor(accumulator / fixedTimestep)
+  console.warn(
+    `[LAG] Frame took ${deltaTime.toFixed(1)}ms (budget: ${fixedTimestep.toFixed(1)}ms, +${(deltaTime - fixedTimestep).toFixed(1)}ms).` +
+      (catchUpTicks > 1 ? ` Catching up ${catchUpTicks} ticks.` : '')
+  )
+}
+
 function handleNoPlayers() {
   setTimeout(gameLoop, 1000) // Retry after 1 second
-  accumulatedTime = 0
+  accumulator = 0
 }
 
 async function gameLoop() {
-  const currentTime = Date.now()
-  const frameTime = currentTime - lastFrameTime // Time elapsed since last frame
-  lastFrameTime = currentTime
-  accumulatedTime += frameTime
+  const now = Date.now()
+  const deltaTime = now - lastFrameTime
+  lastFrameTime = now
+  accumulator += deltaTime
 
-  while (accumulatedTime >= fixedTimestep) {
-    const playerExist = atLeastOnePlayerExists()
+  if (!hasPlayers()) {
+    handleNoPlayers()
+    return
+  }
 
-    if (!playerExist) {
-      handleNoPlayers()
-      return
-    }
+  checkLag(deltaTime)
+
+  while (accumulator >= fixedTimestep) {
     await updateGameState(fixedTimestep)
-    accumulatedTime -= fixedTimestep
+    accumulator -= fixedTimestep
   }
 
   // Schedule the next loop iteration

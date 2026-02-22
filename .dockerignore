@@ -1,7 +1,8 @@
 **/node_modules
-
 **/dist
 **/.next
+**/package-lock.json
+**/yarn.lock
 *.png
 *.jpg
 *.webp

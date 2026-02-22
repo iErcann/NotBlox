@@ -1,17 +1,26 @@
 {
-  "name": "NotBlox",
+  "name": "@notblox/front",
   "version": "0.1.0",
+  "description": "NotBlox game client frontend",
+  "author": "iercann",
+  "license": "MIT",
   "private": true,
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "dev": "concurrently \"next dev -p 4000\" \"serve -s public/assets -l 4001 --cors\"",
+    "dev": "next dev -p 4000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "serve": "serve -s public/assets -l 4001 --cors"
+  },
+  "overrides": {
+    "minimatch": "^10.2.1"
   },
   "dependencies": {
-    "@radix-ui/react-dropdown-menu": "^2.1.5",
+    "@notblox/shared": "workspace:*",
     "@radix-ui/react-slot": "^1.1.1",
-    "@types/dompurify": "^3.2.0",
     "camera-controls": "^2.8.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -26,22 +35,23 @@
     "react-markdown": "^9.0.3",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "three": "^0.172.0"
+    "three": "^0.183.0"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
-    "@types/node": "latest",
+    "@types/dompurify": "^3.2.0",
+    "@types/node": "^24.0.0",
     "@types/pako": "^2.0.3",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "@types/three": "^0.172.0",
-    "autoprefixer": "latest",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.183.0",
+    "autoprefixer": "^10.4.20",
     "concurrently": "^8.2.2",
-    "eslint": "latest",
-    "eslint-config-next": "^15.1.5",
-    "postcss": "latest",
-    "serve": "^14.2.4",
-    "tailwindcss": "3.4.18",
-    "typescript": "latest"
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^15.5.9",
+    "postcss": "^8.5.1",
+    "serve": "^14.2.5",
+    "tailwindcss": "^3.4.18",
+    "typescript": "^5.7.3"
   }
 }
