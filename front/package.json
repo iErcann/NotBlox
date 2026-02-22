@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "NotBlox game client frontend",
   "author": "iercann",
-  "license": "ISC",
+  "license": "MIT",
   "private": true,
   "engines": {
     "node": ">=24"

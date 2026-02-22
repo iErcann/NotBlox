@@ -80,15 +80,22 @@ for (let i = 1; i <= 4; i++) {
   sphere.entity.addComponent(new ZombieComponent(sphere.entity.id))
 }
 
+// Periodic help message
 let helpMessageTimer = 0
 const HELP_MESSAGE_INTERVAL = 60 * 5 // Send help message every 5 minutes
 
 ScriptableSystem.update = (dt, entities) => {
+  /**
+   * Catch player disconnect events.
+   */
   const playerRemovedEvents = EventSystem.getEventsWrapped(ComponentRemovedEvent, PlayerComponent)
   if (playerRemovedEvents.length > 0) {
     sendGlobalChatMessage('👋', `Player left the obby parkour challenge!`)
   }
 
+  /**
+   * Catch player connect events.
+   */
   const playerAddedEvents = EventSystem.getEventsWrapped(ComponentAddedEvent, PlayerComponent)
   for (const event of playerAddedEvents) {
     const playerId = event.entityId
@@ -124,6 +131,7 @@ ScriptableSystem.update = (dt, entities) => {
 
     const content = event.content.trim()
 
+    // Check if message is a checkpoint command
     if (content.startsWith('/cp') || content.startsWith('/checkpoint')) {
       const playerId = event.entityId
       const playerEntity = EntityManager.getEntityById(entities, playerId)
@@ -131,23 +139,28 @@ ScriptableSystem.update = (dt, entities) => {
 
       if (playerEntity && position) {
         try {
+          // Update the player's checkpoint position
           const spawnPos = playerEntity.getComponent(SpawnPositionComponent)
           if (spawnPos) {
             spawnPos.x = position.x
             spawnPos.y = position.y
             spawnPos.z = position.z
           } else {
+            // If player somehow doesn't have SpawnPositionComponent, add it
             playerEntity.addComponent(
               new SpawnPositionComponent(playerId, position.x, position.y, position.z)
             )
           }
+          // Send confirmation message to the player
           sendTargetedChat('🏁 Checkpoint', `Checkpoint set successfully!`, [playerId])
           sendTargetedNotification('🏁 Checkpoint', 'Checkpoint set successfully!', [playerId])
         } catch (error) {
+          // Handle any errors that might occur
           console.error(`Error setting checkpoint for player ${playerId}:`, error)
           sendTargetedChat('❌ Error', 'Failed to set checkpoint. Please try again.', [playerId])
         }
       } else {
+        // Player entity not found or doesn't have position component
         sendTargetedChat('❌ Error', 'Unable to set checkpoint. Please try again later.', [
           event.entityId,
         ])
@@ -160,6 +173,9 @@ ScriptableSystem.update = (dt, entities) => {
     }
   }
 
+  /**
+   * Periodic help message
+   */
   if (helpMessageTimer >= HELP_MESSAGE_INTERVAL) {
     sendGlobalChatMessage('🤖', 'Available commands: /help, /cp, /checkpoint')
     helpMessageTimer = 0

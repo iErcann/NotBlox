@@ -282,3 +282,23 @@ function spawnFootballBall() {
 }
 
 spawnFootballBall()
+
+// === Create Multiple Objects Example ===
+// Creates a line of cubes with alternating colors
+// const colors = ['#ff0000', '#00ff00', '#0000ff']
+// for (let i = 0; i < 2; i++) {
+//   const cubeParams = {
+//     position: { x: i * 3, y: 5, z: -40 },
+//     size: { width: 1, height: 1, depth: 1 },
+//     color: colors[i % colors.length],
+//   }
+//   const cube = new Cube(cubeParams)
+//   cube.entity.addComponent(new RandomizeComponent(cube.entity.id))
+//   const sphereParams = {
+//     position: { x: i * 3, y: 5, z: -40 },
+//     radius: 1,
+//     color: colors[i % colors.length],
+//   }
+//   const sphere = new Sphere(sphereParams)
+//   sphere.entity.addComponent(new RandomizeComponent(sphere.entity.id))
+// }

@@ -108,17 +108,24 @@ function createTeamTrigger(x: number, y: number, z: number, color: string, spawn
     2,
     12,
     (collidedWithEntity) => {
+      // If the player collides with the trigger, we change his color and teleport him to the stadium
       if (collidedWithEntity.getComponent(PlayerComponent)) {
+        // Change the player color
         EventSystem.addEvent(new ColorEvent(collidedWithEntity.id, color))
+        // Teleport the player to the spawn point
+        // Teleport player to team spawn
         const playerBody = collidedWithEntity.getComponent(DynamicRigidBodyComponent)!.body!
         playerBody.setTranslation(new Rapier.Vector3(spawnX, 5, -350), true)
+        // Reset player velocity
         playerBody.setLinvel(new Rapier.Vector3(0, 0, 0), true)
 
+        // Determine team info
         const isRedTeam = color === '#f0513c'
         const teamColor = isRedTeam ? 'red' : 'blue'
         const teamEmoji = isRedTeam ? '🔴' : '🔵'
         const playerName = collidedWithEntity.getComponent(TextComponent)?.text ?? 'Player'
 
+        // Broadcast join message
         sendGlobalNotification(
           `${teamEmoji} New Player`,
           `${playerName} joined the ${teamColor} team`
@@ -126,7 +133,7 @@ function createTeamTrigger(x: number, y: number, z: number, color: string, spawn
       }
     },
     () => {},
-    false
+    false // We don't want the trigger to be visible, put it to true if you want to debug its position
   )
 }
 
@@ -177,7 +184,11 @@ new TriggerCube(
   false
 )
 
-// Ball kick proximity prompt
+// When the player is near the ball, he can shoot it
+// For that, we need to add a proximity prompt component to the ball
+// The front also needs to render a proximity prompt above the ball
+
+// That's why the proximity prompt component is added to the network data component to be synced with the front
 const proximityPromptComponent = new ProximityPromptComponent(ball.entity.id, {
   text: 'Kick',
   onInteract: (playerEntity) => {
@@ -185,6 +196,7 @@ const proximityPromptComponent = new ProximityPromptComponent(ball.entity.id, {
     const playerRotationComponent = playerEntity.getComponent(RotationComponent)
 
     if (ballRigidbody && playerRotationComponent && playerEntity.getComponent(InputComponent)) {
+      // Convert rotation to direction vector
       const direction = playerRotationComponent.getForwardDirection()
 
       sendTargetedNotification('', 'You kicked the ball!', [playerEntity.id])
@@ -204,6 +216,9 @@ const proximityPromptComponent = new ProximityPromptComponent(ball.entity.id, {
 ball.entity.addNetworkComponent(proximityPromptComponent)
 
 ScriptableSystem.update = (dt, entities) => {
+  /**
+   * Catch player connect events.
+   */
   const playerAddedEvents = EventSystem.getEventsWrapped(ComponentAddedEvent, PlayerComponent)
   for (const event of playerAddedEvents) {
     sendTargetedNotification('⚽ Welcome to Football NotBlox!', 'Choose a team to get started', [
@@ -211,9 +226,11 @@ ScriptableSystem.update = (dt, entities) => {
     ])
   }
 
+  // Check if there are any players
   const hasPlayers = entities.some((entity) => entity.getComponent(PlayerComponent))
 
   if (!hasPlayers) {
+    // No players are present. Reset the game
     sendGlobalChatMessage('⚽', 'No players, resetting game...')
 
     const ballBody = ball.entity.getComponent(DynamicRigidBodyComponent)!.body!

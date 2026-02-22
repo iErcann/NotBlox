@@ -14,7 +14,7 @@
     "format": "eslint src/**/*.ts --fix"
   },
   "author": "iercann",
-  "license": "ISC",
+  "license": "MIT",
   "engines": {
     "node": ">=24"
   },
