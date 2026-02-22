@@ -1,0 +1,10 @@
+- lint backend + shared
+- use absolute imports in backend + shared
+- basic tests ?
+- iac?
+- use caddy + certbot for ssl
+- if one day it requires real ugc content, use wasm + quickjs
+- fix the car
+- fix the lighting
+- fix sky since three.js modified it
+- add more games
