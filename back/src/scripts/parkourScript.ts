@@ -59,7 +59,7 @@ for (let i = 1; i <= 4; i++) {
   const fallingSpherePosition = {
     x: 263,
     y: 426 + i * 5,
-    z: -986 - randomInt(0, -40),
+    z: -986 - randomInt(-40, 0),
   }
 
   const sphere = new Sphere({
