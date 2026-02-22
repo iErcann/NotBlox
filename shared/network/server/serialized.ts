@@ -23,6 +23,10 @@ export enum SerializedComponentType {
   COMPONENT_REMOVED_EVENT = 16,
   WHEEL = 17,
   INVISIBLE = 18,
+  INVENTORY = 19,
+  HEALTH = 20,
+  SCORE = 21,
+  TEAM = 22,
 }
 
 export enum SerializedEntityType {

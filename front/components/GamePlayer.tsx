@@ -4,6 +4,7 @@ import { Game } from '@/game/Game'
 import GameHud from '@/components/GameHud'
 import LoadingScreen from '@/components/LoadingScreen'
 import { MessageComponent } from '@shared/component/MessageComponent'
+import { InventoryState } from '@shared/component/InventoryComponent'
 import { GameInfo } from '@/types'
 
 interface GamePlayerProps extends GameInfo {
@@ -13,6 +14,10 @@ interface GamePlayerProps extends GameInfo {
 export default function GamePlayer({ playerName, ...gameInfo }: GamePlayerProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [messages, setMessages] = useState<MessageComponent[]>([])
+  const [inventory, setInventory] = useState<InventoryState>({
+    items: [],
+    maxSlots: 20,
+  })
   const [gameInstance, setGameInstance] = useState<Game | null>(null) // Initialize as null
   const refContainer = useRef(null)
 
@@ -20,6 +25,7 @@ export default function GamePlayer({ playerName, ...gameInfo }: GamePlayerProps)
     async function initializeGame() {
       const game = Game.getInstance(gameInfo.websocketPort, refContainer)
       game.hud.passChatState(setMessages)
+      game.hud.passInventoryState(setInventory)
       setGameInstance(game)
       try {
         await game.start()
@@ -47,6 +53,7 @@ export default function GamePlayer({ playerName, ...gameInfo }: GamePlayerProps)
             messages={messages}
             sendMessage={gameInstance.hud.sendMessageToServer} // No need for optional chaining here
             gameInstance={gameInstance}
+            inventory={inventory}
           />
         </div>
       )}

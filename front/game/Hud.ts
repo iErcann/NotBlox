@@ -2,6 +2,7 @@
 
 import { Dispatch, SetStateAction } from 'react'
 import { MessageComponent } from '@shared/component/MessageComponent'
+import { InventoryState } from '@shared/component/InventoryComponent'
 import { Game } from './Game'
 import { ClientMessageType } from '@shared/network/client/base'
 import { ChatMessage } from '@shared/network/client/chatMessage'
@@ -10,9 +11,14 @@ import { config } from '@shared/network/config'
 // Props drill
 export class Hud {
   updateChat: Dispatch<SetStateAction<MessageComponent[]>> | undefined
+  updateInventory: Dispatch<SetStateAction<InventoryState>> | undefined
+
   passChatState(updateChat: Dispatch<SetStateAction<MessageComponent[]>>) {
-    // Update the type of setChat
     this.updateChat = updateChat
+  }
+
+  passInventoryState(updateInventory: Dispatch<SetStateAction<InventoryState>>) {
+    this.updateInventory = updateInventory
   }
 
   sendMessageToServer(message: string) {

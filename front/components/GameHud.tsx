@@ -5,21 +5,26 @@ import { Game } from '@/game/Game'
 import Link from 'next/link'
 import { SerializedMessageType } from '@shared/network/server/serialized'
 import { MessageComponent } from '@shared/component/MessageComponent'
+import { InventoryState } from '@shared/component/InventoryComponent'
 import { Maximize } from 'lucide-react'
 import { MicroGameCard } from './GameCard'
 import { GameInfo } from '@/types'
 import gameData from '../public/gameData.json'
+import InventoryHud from './InventoryHud'
 
 export interface GameHudProps {
   messages: MessageComponent[]
   sendMessage: (message: string) => void
   gameInstance: Game
+  /** Optional inventory state – rendered only when items are present */
+  inventory?: InventoryState
 }
 
 export default function GameHud({
   messages: messageComponents,
   sendMessage,
   gameInstance,
+  inventory,
 }: GameHudProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const refContainer = useRef<HTMLDivElement>(null)
@@ -259,6 +264,15 @@ export default function GameHud({
           </button>
         </div>
       </div>
+
+      {/* Inventory HUD – only shown when the player has items */}
+      {inventory && inventory.items.length > 0 && (
+        <InventoryHud
+          items={inventory.items}
+          maxSlots={inventory.maxSlots}
+          gameInstance={gameInstance}
+        />
+      )}
     </div>
   )
 }

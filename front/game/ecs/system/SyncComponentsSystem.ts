@@ -18,11 +18,15 @@ import {
 
 import { MessageListComponent } from '@shared/component/MessageComponent'
 import { ColorComponent } from '@shared/component/ColorComponent'
+import { HealthComponent } from '@shared/component/HealthComponent'
+import { InventoryComponent } from '@shared/component/InventoryComponent'
 import { PositionComponent } from '@shared/component/PositionComponent'
 import { RotationComponent } from '@shared/component/RotationComponent'
+import { ScoreComponent } from '@shared/component/ScoreComponent'
 import { SingleSizeComponent } from '@shared/component/SingleSizeComponent'
 import { SizeComponent } from '@shared/component/SizeComponent'
 import { StateComponent } from '@shared/component/StateComponent'
+import { TeamComponent } from '@shared/component/TeamComponent'
 import { EntityDestroyedEvent } from '@shared/component/events/EntityDestroyedEvent'
 import { ServerMeshComponent } from '@shared/component/ServerMeshComponent'
 import { ProximityPromptComponent } from '@shared/component/ProximityPromptComponent'
@@ -206,6 +210,18 @@ export class SyncComponentsSystem {
         break
       case SerializedComponentType.INVISIBLE:
         component = new InvisibleComponent(entityId)
+        break
+      case SerializedComponentType.HEALTH:
+        component = new HealthComponent(entityId)
+        break
+      case SerializedComponentType.INVENTORY:
+        component = new InventoryComponent(entityId)
+        break
+      case SerializedComponentType.SCORE:
+        component = new ScoreComponent(entityId)
+        break
+      case SerializedComponentType.TEAM:
+        component = new TeamComponent(entityId)
         break
       default:
         console.error("Unknown component type, can't create component")
