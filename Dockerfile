@@ -1,22 +1,18 @@
-# Build stage
+# Build stage: only the shared package needs compilation
 FROM node:24 AS build
 
 RUN corepack enable
 
 WORKDIR /app
 
-# Copy workspace manifests first for better layer caching
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY back/package.json ./back/
 COPY shared/package.json ./shared/
 
 RUN pnpm install --frozen-lockfile
 
-# Copy source
-COPY back ./back/
 COPY shared ./shared/
-
-RUN pnpm run build:back
+RUN pnpm run build:shared
 
 # Production stage
 # uWebSockets.js requires glibc >= 2.38 -> Debian Trixie
@@ -26,15 +22,23 @@ RUN corepack enable
 
 WORKDIR /app
 
-# Copy workspace manifests for production install
-COPY --from=build /app/package.json /app/pnpm-workspace.yaml /app/pnpm-lock.yaml ./
-COPY --from=build /app/back/package.json ./back/
-COPY --from=build /app/shared/package.json ./shared/
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY back/package.json ./back/
+COPY shared/package.json ./shared/
 
-# Install production dependencies only
+# Install production dependencies (includes tsx for runtime TypeScript loading)
 RUN pnpm install --frozen-lockfile --prod
 
-# Copy built files and scripts
-COPY --from=build /app/back/dist ./back/dist
+# Copy shared source + compiled dist:
+#   dist/ is needed for @notblox/shared package resolution
+#   source is needed for relative imports inside scripts (e.g. ../../../shared/system/...)
+COPY --from=build /app/shared ./shared/
 
-CMD ["node", "back/dist/back/src/sandbox.js"]
+# Copy back source. tsx loads TypeScript at runtime, no tsc step needed.
+# To swap a script without rebuilding the image, volume-mount the scripts directory:
+#   docker run -v ./my-scripts:/app/back/src/scripts -e GAME_SCRIPT=myGame.ts ...
+COPY back/src ./back/src
+
+# Run from back/ so Node resolves tsx from back/node_modules
+WORKDIR /app/back
+CMD ["node", "--import", "tsx/esm", "src/sandbox.ts"]

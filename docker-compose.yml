@@ -33,17 +33,18 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
+      - DOCKER_API_VERSION=1.52
       - WATCHTOWER_POLL_INTERVAL=300 # Check for updates every 5 minutes
       - WATCHTOWER_CLEANUP=true # Remove old images after update
       - WATCHTOWER_LABEL_ENABLE=true # Only watch services with a specific label
     restart: unless-stopped
 
   game_test_server:
-    image: ghcr.io/iercann/notblox-game-server:latest
+    build: .
     labels:
       - com.centurylinklabs.watchtower.enable=true
     environment:
-      - GAME_SCRIPT=defaultScript.js
+      - GAME_SCRIPT=defaultScript.ts
       - GAME_TICKRATE=40 # Higher tickrate for vehicles
       - NODE_ENV=production
       - FRONTEND_URL=https://www.notblox.online
@@ -63,7 +64,7 @@ services:
     labels:
       - com.centurylinklabs.watchtower.enable=true
     environment:
-      - GAME_SCRIPT=parkourScript.js
+      - GAME_SCRIPT=parkourScript.ts
       - GAME_TICKRATE=20 # Default tickrate
       - NODE_ENV=production
       - FRONTEND_URL=https://www.notblox.online
@@ -83,7 +84,7 @@ services:
     labels:
       - com.centurylinklabs.watchtower.enable=true
     environment:
-      - GAME_SCRIPT=footballScript.js
+      - GAME_SCRIPT=footballScript.ts
       - GAME_TICKRATE=20
       - NODE_ENV=production
       - FRONTEND_URL=https://www.notblox.online
@@ -103,7 +104,7 @@ services:
     labels:
       - com.centurylinklabs.watchtower.enable=true
     environment:
-      - GAME_SCRIPT=petSimulatorScript.js
+      - GAME_SCRIPT=petSimulatorScript.ts
       - GAME_TICKRATE=20
       - NODE_ENV=production
       - FRONTEND_URL=https://www.notblox.online
@@ -124,7 +125,7 @@ services:
       - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
       - DOCKER_GATEWAY=https://172.17.0.1
       - CHECK_INTERVAL=10000
-    restart: unless-stopped
+    restart: 'no'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     logging:

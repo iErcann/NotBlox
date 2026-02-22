@@ -2,14 +2,14 @@
   "name": "@notblox/back",
   "version": "1.0.0",
   "description": "NotBlox game server backend",
-  "main": "dist/back/src/sandbox.js",
+  "main": "src/sandbox.ts",
   "type": "module",
   "private": true,
   "scripts": {
-    "debug": "tsc-watch --project tsconfig.json --onSuccess \"node --inspect=7000 dist/back/src/sandbox.js\"",
-    "dev": "tsc-watch --project tsconfig.json --onSuccess \"node dist/back/src/sandbox.js\"",
-    "build": "tsc --build tsconfig.json",
-    "start": "node dist/back/src/sandbox.js",
+    "debug": "node --import tsx/esm --inspect=7000 src/sandbox.ts",
+    "dev": "tsx watch src/sandbox.ts",
+    "build": "tsc --noEmit",
+    "start": "node --import tsx/esm src/sandbox.ts",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix"
   },
@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@notblox/shared": "workspace:*",
+    "tsx": "^4.0.0",
     "@dimforge/rapier3d-compat": "^0.14.0",
     "dotenv": "^16.3.1",
     "msgpackr": "^1.9.9",
@@ -41,8 +42,6 @@
     "@typescript-eslint/parser": "latest",
     "eslint": "latest",
     "globals": "latest",
-    "tsc-watch": "^6.2.0",
-    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "latest"
   }

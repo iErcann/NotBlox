@@ -115,7 +115,7 @@ The backend can be configured through environment variables in `./back/.env`:
 ```bash
 NODE_ENV=development
 GAME_TICKRATE=20 # Game tickrate in Hz (20Hz = 50ms)
-GAME_SCRIPT=defaultScript.js # Script to run
+GAME_SCRIPT=defaultScript.ts # Script source file in back/src/scripts/
 
 # Commented in dev mode :
 # FRONTEND_URL=https://www.notblox.online # Only accept connections from this URL
@@ -126,7 +126,7 @@ GAME_SCRIPT=defaultScript.js # Script to run
 ```bash
 NODE_ENV=production
 GAME_TICKRATE=20 # Game tickrate in Hz (20Hz = 50ms)
-GAME_SCRIPT=defaultScript.js # Script to run
+GAME_SCRIPT=defaultScript.ts # Script source file in back/src/scripts/
 
 # To prevent hijacking
 FRONTEND_URL=https://www.notblox.online
@@ -138,12 +138,37 @@ SSL_CERT_FILE=/etc/letsencrypt/live/npm-3/cert.pem
 
 #### Game Scripts
 
-The `GAME_SCRIPT` system allows for modular gameplay modes similar to Garry's Mod's LUA scripts:
+The `GAME_SCRIPT` system allows for modular gameplay modes similar to Garry's Mod's LUA scripts.
 
-- Scripts are loaded dynamically at runtime
-- Multiple servers can run different game modes
-- No rebuild required when modifying game logic, just change the `GAME_SCRIPT` variable in the `.env` file and restart
-- Located in `back/src/scripts/`
+Scripts live in `back/src/scripts/` and are **plain TypeScript source files** loaded at runtime by [`tsx`](https://tsx.is/) — **no compilation step needed**. The Docker image is built once; scripts can be swapped via a volume mount without ever rebuilding.
+
+| Script                  | Description                                                         |
+| ----------------------- | ------------------------------------------------------------------- |
+| `defaultScript.ts`      | Sandbox world: cars, physics cubes, a trampoline, a football        |
+| `footballScript.ts`     | 2-team football match with score, goals, and a kick mechanic        |
+| `parkourScript.ts`      | Obby-style obstacle course with checkpoints                         |
+| `petSimulatorScript.ts` | Pet simulator: hatch eggs, collect pets, leaderboard, coin triggers |
+
+**How it works:**
+
+- `GAME_SCRIPT` in `.env` points to the **source** filename (e.g. `defaultScript.ts`)
+- At startup, `sandbox.ts` dynamically imports the script via `tsx` — TypeScript is stripped/transformed on the fly by Node's tsx loader
+
+**Swapping scripts without rebuilding:**
+
+```bash
+# Mount a local scripts folder over the one baked into the image
+docker run \
+  -v ./my-scripts:/app/back/src/scripts \
+  -e GAME_SCRIPT=myGame.ts \
+  ghcr.io/iercann/notblox-game-server:latest
+```
+
+**Adding a new game mode:**
+
+1. Create `back/src/scripts/myGame.ts` — import ECS entities/components as needed
+2. Set `GAME_SCRIPT=myGame.ts` in `.env`
+3. Run `pnpm run dev:back`
 
 #### Tickrate Configuration
 
@@ -180,7 +205,7 @@ NEXT_PUBLIC_SERVER_URL=ws://localhost
 
 Maps are **GLB/GLTF files**. The back-end approximates a **Trimesh Collider** based on the map, which is rendered on the client.
 
-To change the map, update the URL in `back/src/scripts/defaultScript.js`:
+To change the map, update the URL in `back/src/scripts/defaultScript.ts`:
 
 ```typescript
 new MapWorld('https://notbloxo.fra1.cdn.digitaloceanspaces.com/Notblox-Assets/world/TestWorld.glb') // Change this URL to your map
@@ -197,7 +222,7 @@ You can host your assets for free using **GitHub** and **Githack**. Here's how:
 
 ![Githack](Githack.webp)
 
-Then, update the URL in `defaultScript.js`:
+Then, update the URL in `defaultScript.ts`:
 
 ```typescript
 new MapWorld(
