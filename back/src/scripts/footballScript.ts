@@ -113,7 +113,6 @@ function createTeamTrigger(x: number, y: number, z: number, color: string, spawn
         // Change the player color
         EventSystem.addEvent(new ColorEvent(collidedWithEntity.id, color))
         // Teleport the player to the spawn point
-        // Teleport player to team spawn
         const playerBody = collidedWithEntity.getComponent(DynamicRigidBodyComponent)!.body!
         playerBody.setTranslation(new Rapier.Vector3(spawnX, 5, -350), true)
         // Reset player velocity
