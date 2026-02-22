@@ -1,6 +1,4 @@
-// WebSocketComponent.ts
-
-import { Component } from '../../../../shared/component/Component.js'
+import { Component } from '@shared/component/Component.js'
 
 export class WebSocketComponent extends Component {
   /**
@@ -10,7 +8,11 @@ export class WebSocketComponent extends Component {
    * @param isFirstSnapshotSent - A flag indicating whether the first snapshot has been sent over the WebSocket connection.
    *                              On the first snapshot, all NetworkComponents are sent, regardless of their `updated` flag.
    */
-  constructor(entityId: number, public ws: any, public isFirstSnapshotSent = false) {
+  constructor(
+    entityId: number,
+    public ws: any,
+    public isFirstSnapshotSent = false
+  ) {
     super(entityId)
   }
 }

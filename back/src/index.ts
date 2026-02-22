@@ -1,8 +1,8 @@
 import 'dotenv/config'
 
-import { EntityManager } from '../../shared/system/EntityManager.js'
-import { config } from '../../shared/network/config.js'
-import { EventSystem } from '../../shared/system/EventSystem.js'
+import { EntityManager } from '@shared/system/EntityManager.js'
+import { config } from '@shared/network/config.js'
+import { EventSystem } from '@shared/system/EventSystem.js'
 
 import { Chat } from './ecs/entity/Chat.js'
 import { AnimationSystem } from './ecs/system/AnimationSystem.js'
@@ -27,7 +27,7 @@ import { SphereColliderSystem } from './ecs/system/physics/SphereColliderSystem.
 import { SyncPositionSystem } from './ecs/system/physics/SyncPositionSystem.js'
 import { SyncRotationSystem } from './ecs/system/physics/SyncRotationSystem.js'
 import { TrimeshColliderSystem } from './ecs/system/physics/TrimeshColliderSystem.js'
-import { PlayerComponent } from '../../shared/component/PlayerComponent.js'
+import { PlayerComponent } from '@shared/component/PlayerComponent.js'
 import { ZombieSystem } from './ecs/system/ZombieSystem.js'
 import { ScriptableSystem } from './ecs/system/ScriptableSystem.js'
 import { FollowTargetSystem } from './ecs/system/FollowTargetSystem.js'

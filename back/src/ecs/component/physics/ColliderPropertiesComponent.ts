@@ -1,5 +1,4 @@
-// back/src/ecs/component/physics/ColliderPropertiesComponent.ts
-import { Component } from '../../../../../shared/component/Component.js'
+import { Component } from '@shared/component/Component.js'
 
 export interface ColliderPropertiesComponentData {
   isSensor?: boolean
@@ -8,7 +7,10 @@ export interface ColliderPropertiesComponentData {
 }
 
 export class ColliderPropertiesComponent extends Component {
-  constructor(entityId: number, public data: ColliderPropertiesComponentData) {
+  constructor(
+    entityId: number,
+    public data: ColliderPropertiesComponentData
+  ) {
     super(entityId)
   }
 }

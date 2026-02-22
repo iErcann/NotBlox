@@ -1,11 +1,11 @@
-import { Entity } from '../../../../shared/entity/Entity.js'
-import { VehicleComponent } from '../../../../shared/component/VehicleComponent.js'
-import { EntityManager } from '../../../../shared/system/EntityManager.js'
+import { Entity } from '@shared/entity/Entity.js'
+import { VehicleComponent } from '@shared/component/VehicleComponent.js'
+import { EntityManager } from '@shared/system/EntityManager.js'
 import { InputComponent } from '../component/InputComponent.js'
 import { DynamicRigidBodyComponent } from '../component/physics/DynamicRigidBodyComponent.js'
 import { VehicleRayCastComponent } from '../component/physics/VehicleRayCastComponent.js'
-import { VehicleOccupancyComponent } from '../../../../shared/component/VehicleOccupancyComponent.js'
-import { PositionComponent } from '../../../../shared/component/PositionComponent.js'
+import { VehicleOccupancyComponent } from '@shared/component/VehicleOccupancyComponent.js'
+import { PositionComponent } from '@shared/component/PositionComponent.js'
 import Rapier from '../../physics/rapier.js'
 import * as THREE from 'three'
 
@@ -100,8 +100,8 @@ export class VehicleMovementSystem {
           const engineForce = driverInputComponent.up
             ? 15000
             : driverInputComponent.down
-            ? -15000
-            : 0
+              ? -15000
+              : 0
           for (const wheelIndex of engineForceWheelsIndex) {
             vehicleController.setWheelEngineForce(wheelIndex, engineForce)
           }
@@ -114,8 +114,8 @@ export class VehicleMovementSystem {
           const steeringAngle = driverInputComponent.left
             ? Math.PI / 12
             : driverInputComponent.right
-            ? -Math.PI / 12
-            : 0
+              ? -Math.PI / 12
+              : 0
           for (const wheelIndex of steeringWheelsIndex) {
             vehicleController.setWheelSteering(wheelIndex, steeringAngle)
           }

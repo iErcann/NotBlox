@@ -5,7 +5,6 @@ import { OrbitCameraFollowSystem } from './ecs/system'
 import { WebSocketManager } from './WebsocketManager'
 import { ProximityPromptSystem } from './ecs/system/ProximityPromptSystem'
 import { Entity } from '@shared/entity/Entity'
-import { EntityManager } from '@shared/system/EntityManager'
 
 export enum KeyboardLanguage {
   FR = 'fr',

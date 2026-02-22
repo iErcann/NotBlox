@@ -1,4 +1,4 @@
-import { Component } from '../../../../shared/component/Component.js'
+import { Component } from '@shared/component/Component.js'
 
 /**
  * This component is used to set the spawn position of an entity.
@@ -9,7 +9,12 @@ import { Component } from '../../../../shared/component/Component.js'
  * @param z - The z coordinate of the spawn position.
  */
 export class SpawnPositionComponent extends Component {
-  constructor(entityId: number, public x: number, public y: number, public z: number) {
+  constructor(
+    entityId: number,
+    public x: number,
+    public y: number,
+    public z: number
+  ) {
     super(entityId)
   }
 }

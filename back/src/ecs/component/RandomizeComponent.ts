@@ -1,4 +1,4 @@
-import { Component } from '../../../../shared/component/Component.js'
+import { Component } from '@shared/component/Component.js'
 
 /**
  * Randomize the entity's behavior.

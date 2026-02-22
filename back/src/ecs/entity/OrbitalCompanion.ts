@@ -1,13 +1,13 @@
-import { Entity } from '../../../../shared/entity/Entity.js'
-import { PositionComponent } from '../../../../shared/component/PositionComponent.js'
-import { RotationComponent } from '../../../../shared/component/RotationComponent.js'
-import { ServerMeshComponent } from '../../../../shared/component/ServerMeshComponent.js'
-import { NetworkDataComponent } from '../../../../shared/network/NetworkDataComponent.js'
-import { SerializedEntityType } from '../../../../shared/network/server/serialized.js'
-import { EntityManager } from '../../../../shared/system/EntityManager.js'
+import { Entity } from '@shared/entity/Entity.js'
+import { PositionComponent } from '@shared/component/PositionComponent.js'
+import { RotationComponent } from '@shared/component/RotationComponent.js'
+import { ServerMeshComponent } from '@shared/component/ServerMeshComponent.js'
+import { NetworkDataComponent } from '@shared/network/NetworkDataComponent.js'
+import { SerializedEntityType } from '@shared/network/server/serialized.js'
+import { EntityManager } from '@shared/system/EntityManager.js'
 import { FollowTargetComponent } from '../component/FollowTargetComponent.js'
-import { TextComponent } from '../../../../shared/component/TextComponent.js'
-import { SingleSizeComponent } from '../../../../shared/component/SingleSizeComponent.js'
+import { TextComponent } from '@shared/component/TextComponent.js'
+import { SingleSizeComponent } from '@shared/component/SingleSizeComponent.js'
 
 export interface OrbitalCompanionParams {
   /**

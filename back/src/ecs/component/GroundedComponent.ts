@@ -1,4 +1,4 @@
-import { Component } from '../../../../shared/component/Component.js'
+import { Component } from '@shared/component/Component.js'
 
 /**
  *
@@ -7,7 +7,10 @@ import { Component } from '../../../../shared/component/Component.js'
  * Checked by `GroundCheckSystem`.
  */
 export class GroundCheckComponent extends Component {
-  constructor(entityId: number, public grounded: boolean = false) {
+  constructor(
+    entityId: number,
+    public grounded: boolean = false
+  ) {
     super(entityId)
   }
 }

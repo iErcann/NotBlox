@@ -1,27 +1,27 @@
-import { PositionComponent } from '../../../../shared/component/PositionComponent.js'
-import { RotationComponent } from '../../../../shared/component/RotationComponent.js'
-import { Entity } from '../../../../shared/entity/Entity.js'
-import { SerializedEntityType } from '../../../../shared/network/server/serialized.js'
-import { SizeComponent } from '../../../../shared/component/SizeComponent.js'
-import { EntityManager } from '../../../../shared/system/EntityManager.js'
-import { NetworkDataComponent } from '../../../../shared/network/NetworkDataComponent.js'
+import { PositionComponent } from '@shared/component/PositionComponent.js'
+import { RotationComponent } from '@shared/component/RotationComponent.js'
+import { Entity } from '@shared/entity/Entity.js'
+import { SerializedEntityType } from '@shared/network/server/serialized.js'
+import { SizeComponent } from '@shared/component/SizeComponent.js'
+import { EntityManager } from '@shared/system/EntityManager.js'
+import { NetworkDataComponent } from '@shared/network/NetworkDataComponent.js'
 import { DynamicRigidBodyComponent } from '../component/physics/DynamicRigidBodyComponent.js'
-import { ServerMeshComponent } from '../../../../shared/component/ServerMeshComponent.js'
+import { ServerMeshComponent } from '@shared/component/ServerMeshComponent.js'
 import {
   PhysicsPropertiesComponent,
   PhysicsPropertiesComponentData,
 } from '../component/physics/PhysicsPropertiesComponent.js'
-import { TextComponent } from '../../../../shared/component/TextComponent.js'
+import { TextComponent } from '@shared/component/TextComponent.js'
 import { ConvexHullColliderComponent } from '../component/physics/ConvexHullColliderComponent.js'
-import { VehicleComponent } from '../../../../shared/component/VehicleComponent.js'
+import { VehicleComponent } from '@shared/component/VehicleComponent.js'
 import {
   ColliderPropertiesComponent,
   ColliderPropertiesComponentData,
 } from '../component/physics/ColliderPropertiesComponent.js'
-import { ProximityPromptComponent } from '../../../../shared/component/ProximityPromptComponent.js'
+import { ProximityPromptComponent } from '@shared/component/ProximityPromptComponent.js'
 import { VehicleSystem } from '../system/VehicleSystem.js'
-import { WheelComponent } from '../../../../shared/component/WheelComponent.js'
-import { ColorComponent } from '../../../../shared/component/ColorComponent.js'
+import { WheelComponent } from '@shared/component/WheelComponent.js'
+import { ColorComponent } from '@shared/component/ColorComponent.js'
 export interface CarParams {
   position: {
     x: number

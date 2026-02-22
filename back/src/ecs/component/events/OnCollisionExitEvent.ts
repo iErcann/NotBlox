@@ -1,5 +1,5 @@
-import { Entity } from '../../../../../shared/entity/Entity.js'
-import { Component } from '../../../../../shared/component/Component.js'
+import { Entity } from '@shared/entity/Entity.js'
+import { Component } from '@shared/component/Component.js'
 
 /**
  * This component is used to handle the collision exit event.
@@ -9,7 +9,10 @@ import { Component } from '../../../../../shared/component/Component.js'
  * @param callback - The callback function to be called when the collision exit event occurs.
  */
 export class OnCollisionExitEvent extends Component {
-  constructor(entityId: number, public callback: (collidedWithEntity: Entity) => void) {
+  constructor(
+    entityId: number,
+    public callback: (collidedWithEntity: Entity) => void
+  ) {
     super(entityId)
   }
 

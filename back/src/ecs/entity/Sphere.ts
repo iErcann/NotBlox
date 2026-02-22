@@ -1,16 +1,16 @@
-import { PositionComponent } from '../../../../shared/component/PositionComponent.js'
-import { RotationComponent } from '../../../../shared/component/RotationComponent.js'
+import { PositionComponent } from '@shared/component/PositionComponent.js'
+import { RotationComponent } from '@shared/component/RotationComponent.js'
 
-import { Entity } from '../../../../shared/entity/Entity.js'
-import { SerializedEntityType } from '../../../../shared/network/server/serialized.js'
+import { Entity } from '@shared/entity/Entity.js'
+import { SerializedEntityType } from '@shared/network/server/serialized.js'
 
-import { ColorComponent } from '../../../../shared/component/ColorComponent.js'
-import { SingleSizeComponent } from '../../../../shared/component/SingleSizeComponent.js'
-import { EntityManager } from '../../../../shared/system/EntityManager.js'
-import { NetworkDataComponent } from '../../../../shared/network/NetworkDataComponent.js'
+import { ColorComponent } from '@shared/component/ColorComponent.js'
+import { SingleSizeComponent } from '@shared/component/SingleSizeComponent.js'
+import { EntityManager } from '@shared/system/EntityManager.js'
+import { NetworkDataComponent } from '@shared/network/NetworkDataComponent.js'
 import { DynamicRigidBodyComponent } from '../component/physics/DynamicRigidBodyComponent.js'
 import { SphereColliderComponent } from '../component/physics/SphereColliderComponent.js'
-import { ServerMeshComponent } from '../../../../shared/component/ServerMeshComponent.js'
+import { ServerMeshComponent } from '@shared/component/ServerMeshComponent.js'
 import {
   PhysicsPropertiesComponent,
   PhysicsPropertiesComponentData,

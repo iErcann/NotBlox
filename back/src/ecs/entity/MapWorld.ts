@@ -1,13 +1,13 @@
-import { EntityManager } from '../../../../shared/system/EntityManager.js'
-import { Entity } from '../../../../shared/entity/Entity.js'
-import { SerializedEntityType } from '../../../../shared/network/server/serialized.js'
-import { TrimeshCollidersComponent } from '../component/physics/TrimeshColliderComponent.js'
-import { KinematicRigidBodyComponent } from '../component/physics/KinematicRigidBodyComponent.js'
-import { PositionComponent } from '../../../../shared/component/PositionComponent.js'
-import { ServerMeshComponent } from '../../../../shared/component/ServerMeshComponent.js'
-import { NetworkDataComponent } from '../../../../shared/network/NetworkDataComponent.js'
-import { PhysicsPropertiesComponent } from '../component/physics/PhysicsPropertiesComponent.js'
-import { ColliderPropertiesComponent } from '../component/physics/ColliderPropertiesComponent.js'
+import { EntityManager } from '@shared/system/EntityManager.js'
+import { Entity } from '@shared/entity/Entity.js'
+import { SerializedEntityType } from '@shared/network/server/serialized.js'
+import { TrimeshCollidersComponent } from '@back/ecs/component/physics/TrimeshColliderComponent.js'
+import { KinematicRigidBodyComponent } from '@back/ecs/component/physics/KinematicRigidBodyComponent.js'
+import { PositionComponent } from '@shared/component/PositionComponent.js'
+import { ServerMeshComponent } from '@shared/component/ServerMeshComponent.js'
+import { NetworkDataComponent } from '@shared/network/NetworkDataComponent.js'
+import { PhysicsPropertiesComponent } from '@back/ecs/component/physics/PhysicsPropertiesComponent.js'
+import { ColliderPropertiesComponent } from '@back/ecs/component/physics/ColliderPropertiesComponent.js'
 
 export class MapWorld {
   entity: Entity
