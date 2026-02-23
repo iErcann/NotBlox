@@ -1,5 +1,4 @@
 import GameCard from '@/components/GameCard'
-import KeyboardLayout from '@/components/KeyboardLayout'
 import Navbar from '@/components/Navbar'
 import { ExternalLink, Github, Twitter } from 'lucide-react'
 import Link from 'next/link'
@@ -46,7 +45,6 @@ export default async function Home() {
             </div>
           ))}
       </div>
-      <KeyboardLayout />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3 my-4">
         <Link
