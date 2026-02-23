@@ -1,10 +1,10 @@
-import { Entity } from '../../../../shared/entity/Entity.js'
-import { PositionComponent } from '../../../../shared/component/PositionComponent.js'
+import { Entity } from '@shared/entity/Entity.js'
+import { PositionComponent } from '@shared/component/PositionComponent.js'
 import { FollowTargetComponent } from '../component/FollowTargetComponent.js'
-import { EntityManager } from '../../../../shared/system/EntityManager.js'
-import { EventSystem } from '../../../../shared/system/EventSystem.js'
-import { EntityDestroyedEvent } from '../../../../shared/component/events/EntityDestroyedEvent.js'
-import { RotationComponent } from '../../../../shared/component/RotationComponent.js'
+import { EntityManager } from '@shared/system/EntityManager.js'
+import { EventSystem } from '@shared/system/EventSystem.js'
+import { EntityDestroyedEvent } from '@shared/component/events/EntityDestroyedEvent.js'
+import { RotationComponent } from '@shared/component/RotationComponent.js'
 
 /**
  * System that manages entities with FollowTargetComponent, making them follow

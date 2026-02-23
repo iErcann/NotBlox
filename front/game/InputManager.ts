@@ -5,12 +5,6 @@ import { OrbitCameraFollowSystem } from './ecs/system'
 import { WebSocketManager } from './WebsocketManager'
 import { ProximityPromptSystem } from './ecs/system/ProximityPromptSystem'
 import { Entity } from '@shared/entity/Entity'
-import { EntityManager } from '@shared/system/EntityManager'
-
-export enum KeyboardLanguage {
-  FR = 'fr',
-  EN = 'en',
-}
 
 export class InputManager {
   pcUser: boolean = true
@@ -26,26 +20,20 @@ export class InputManager {
     r: false,
     // SPACE
     s: false,
+    // YAW (looking direction)
     y: 0,
     // INTERACTION
     i: false,
   }
   proximityPromptSystem = new ProximityPromptSystem()
 
-  private keyboardLanguage: KeyboardLanguage = KeyboardLanguage.EN
-  private cameraFollowSystem: OrbitCameraFollowSystem // Add a reference to the camera follow system
+  private cameraFollowSystem: OrbitCameraFollowSystem
 
   constructor(
     private webSocketManager: WebSocketManager,
     cameraFollowSystem: OrbitCameraFollowSystem
   ) {
-    this.cameraFollowSystem = cameraFollowSystem // Initialize the camera follow system
-
-    // Retrieve keyboard language from local storage, defaulting to EN if not found
-    const savedLanguage = localStorage.getItem('keyboardLanguage')
-    this.keyboardLanguage = savedLanguage
-      ? (savedLanguage as KeyboardLanguage)
-      : KeyboardLanguage.EN
+    this.cameraFollowSystem = cameraFollowSystem
 
     // Add event listeners to handle user input
     window.addEventListener('keydown', this.handleKeyDown.bind(this))
@@ -82,135 +70,55 @@ export class InputManager {
   private handleKeyDown(event: KeyboardEvent) {
     if (!this.pcUser) this.pcUser = true
     if (!this.isGameFocused(event)) return
-    switch (this.keyboardLanguage) {
-      case KeyboardLanguage.EN:
-        switch (event.key) {
-          case 'ArrowUp':
-          case 'W':
-          case 'w':
-            this.inputState.u = true
-            break
-          case 'ArrowDown':
-          case 'S':
-          case 's':
-            this.inputState.d = true
-            break
-          case 'ArrowLeft':
-          case 'A':
-          case 'a':
-            this.inputState.l = true
-            break
-          case 'ArrowRight':
-          case 'D':
-          case 'd':
-            this.inputState.r = true
-            break
-          case ' ':
-            this.inputState.s = true
-            break
-          case 'E':
-          case 'e':
-            this.inputState.i = true
-            break
-        }
+    switch (event.code) {
+      case 'KeyW':
+      case 'ArrowUp':
+        this.inputState.u = true
         break
-      case KeyboardLanguage.FR:
-        switch (event.key) {
-          case 'ArrowUp':
-          case 'Z':
-          case 'z':
-            this.inputState.u = true
-            break
-          case 'ArrowDown':
-          case 'S':
-          case 's':
-            this.inputState.d = true
-            break
-          case 'ArrowLeft':
-          case 'Q':
-          case 'q':
-            this.inputState.l = true
-            break
-          case 'ArrowRight':
-          case 'D':
-          case 'd':
-            this.inputState.r = true
-            break
-          case ' ':
-            this.inputState.s = true
-            break
-          case 'E':
-          case 'e':
-            this.inputState.i = true
-            break
-        }
+      case 'KeyS':
+      case 'ArrowDown':
+        this.inputState.d = true
+        break
+      case 'KeyA':
+      case 'ArrowLeft':
+        this.inputState.l = true
+        break
+      case 'KeyD':
+      case 'ArrowRight':
+        this.inputState.r = true
+        break
+      case 'Space':
+        this.inputState.s = true
+        break
+      case 'KeyE':
+        this.inputState.i = true
         break
     }
   }
 
   private handleKeyUp(event: KeyboardEvent) {
-    switch (this.keyboardLanguage) {
-      case KeyboardLanguage.EN:
-        switch (event.key) {
-          case 'ArrowUp':
-          case 'W':
-          case 'w':
-            this.inputState.u = false
-            break
-          case 'ArrowDown':
-          case 'S':
-          case 's':
-            this.inputState.d = false
-            break
-          case 'ArrowLeft':
-          case 'A':
-          case 'a':
-            this.inputState.l = false
-            break
-          case 'ArrowRight':
-          case 'D':
-          case 'd':
-            this.inputState.r = false
-            break
-          case ' ':
-            this.inputState.s = false
-            break
-          case 'E':
-          case 'e':
-            this.inputState.i = false
-            break
-        }
+    switch (event.code) {
+      case 'KeyW':
+      case 'ArrowUp':
+        this.inputState.u = false
         break
-      case KeyboardLanguage.FR:
-        switch (event.key) {
-          case 'ArrowUp':
-          case 'Z':
-          case 'z':
-            this.inputState.u = false
-            break
-          case 'ArrowDown':
-          case 'S':
-          case 's':
-            this.inputState.d = false
-            break
-          case 'ArrowLeft':
-          case 'Q':
-          case 'q':
-            this.inputState.l = false
-            break
-          case 'ArrowRight':
-          case 'D':
-          case 'd':
-            this.inputState.r = false
-            break
-          case ' ':
-            this.inputState.s = false
-            break
-          case 'E':
-          case 'e':
-            this.inputState.i = false
-            break
-        }
+      case 'KeyS':
+      case 'ArrowDown':
+        this.inputState.d = false
+        break
+      case 'KeyA':
+      case 'ArrowLeft':
+        this.inputState.l = false
+        break
+      case 'KeyD':
+      case 'ArrowRight':
+        this.inputState.r = false
+        break
+      case 'Space':
+        this.inputState.s = false
+        break
+      case 'KeyE':
+        this.inputState.i = false
         break
     }
   }

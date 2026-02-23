@@ -1,12 +1,12 @@
-import { EventSystem } from '../../../../shared/system/EventSystem.js'
-import { ComponentAddedEvent } from '../../../../shared/component/events/ComponentAddedEvent.js'
-import { Entity } from '../../../../shared/entity/Entity.js'
-import { VehicleComponent } from '../../../../shared/component/VehicleComponent.js'
-import { EntityManager } from '../../../../shared/system/EntityManager.js'
+import { EventSystem } from '@shared/system/EventSystem.js'
+import { ComponentAddedEvent } from '@shared/component/events/ComponentAddedEvent.js'
+import { Entity } from '@shared/entity/Entity.js'
+import { VehicleComponent } from '@shared/component/VehicleComponent.js'
+import { EntityManager } from '@shared/system/EntityManager.js'
 import { DynamicRigidBodyComponent } from '../component/physics/DynamicRigidBodyComponent.js'
 import Rapier from '../../physics/rapier.js'
 import { VehicleRayCastComponent } from '../component/physics/VehicleRayCastComponent.js'
-import { WheelComponent } from '../../../../shared/component/WheelComponent.js'
+import { WheelComponent } from '@shared/component/WheelComponent.js'
 
 export class VehicleCreationSystem {
   update(entities: Entity[], world: Rapier.World): void {

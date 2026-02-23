@@ -9,9 +9,9 @@ import {
 } from 'uWebSockets.js'
 import { unpack } from 'msgpackr'
 import { RateLimiterMemory } from 'rate-limiter-flexible'
-import { config } from '../../../../../shared/network/config.js'
+import { config } from '@shared/network/config.js'
 
-import { EntityDestroyedEvent } from '../../../../../shared/component/events/EntityDestroyedEvent.js'
+import { EntityDestroyedEvent } from '@shared/component/events/EntityDestroyedEvent.js'
 import {
   ChatMessage,
   InputMessage,
@@ -19,23 +19,23 @@ import {
   SetPlayerNameMessage,
   ClientMessageType,
   ClientMessage,
-} from '../../../../../shared/network/client/index.js'
+} from '@shared/network/client/index.js'
 import {
   ConnectionMessage,
   SerializedMessageType,
   ServerMessageType,
-} from '../../../../../shared/network/server/index.js'
-import { EventSystem } from '../../../../../shared/system/EventSystem.js'
+} from '@shared/network/server/index.js'
+import { EventSystem } from '@shared/system/EventSystem.js'
 
 import { MessageEvent } from '../../component/events/MessageEvent.js'
 import { Player } from '../../entity/Player.js'
 import { InputProcessingSystem } from '../InputProcessingSystem.js'
 import { NetworkSystem } from './NetworkSystem.js'
 import { ProximityPromptInteractEvent } from '../../component/events/ProximityPromptInteractEvent.js'
-import { TextComponent } from '../../../../../shared/component/TextComponent.js'
-import { PlayerComponent } from '../../../../../shared/component/PlayerComponent.js'
-import { EntityManager } from '../../../../../shared/system/EntityManager.js'
-import { MessageListComponent } from '../../../../../shared/component/MessageComponent.js'
+import { TextComponent } from '@shared/component/TextComponent.js'
+import { PlayerComponent } from '@shared/component/PlayerComponent.js'
+import { EntityManager } from '@shared/system/EntityManager.js'
+import { MessageListComponent } from '@shared/component/MessageComponent.js'
 import { ChatComponent } from '../../component/tag/TagChatComponent.js'
 import { WebSocketComponent } from '../../component/WebsocketComponent.js'
 type MessageHandler = (ws: any, message: any) => void

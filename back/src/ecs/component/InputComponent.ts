@@ -1,4 +1,4 @@
-import { Component } from '../../../../shared/component/Component.js'
+import { Component } from '@shared/component/Component.js'
 
 export class InputComponent extends Component {
   up: boolean = false

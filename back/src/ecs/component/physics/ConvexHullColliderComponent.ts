@@ -1,5 +1,5 @@
-import Rapier from '../../../physics/rapier.js'
-import { Component } from '../../../../../shared/component/Component.js'
+import Rapier from '@back/physics/rapier.js'
+import { Component } from '@shared/component/Component.js'
 
 /**
  * https://rapier.rs/docs/user_guides/javascript/colliders/#convex-meshes
@@ -12,7 +12,11 @@ import { Component } from '../../../../../shared/component/Component.js'
  * @param collider Rapier collider.
  */
 export class ConvexHullColliderComponent extends Component {
-  constructor(entityId: number, public meshUrl: string, public collider?: Rapier.Collider) {
+  constructor(
+    entityId: number,
+    public meshUrl: string,
+    public collider?: Rapier.Collider
+  ) {
     super(entityId)
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '../../../../../shared/component/Component.js'
+import { Component } from '@shared/component/Component.js'
 
 export interface PhysicsPropertiesComponentData {
   mass?: number
@@ -9,7 +9,10 @@ export interface PhysicsPropertiesComponentData {
 }
 
 export class PhysicsPropertiesComponent extends Component {
-  constructor(entityId: number, public data: PhysicsPropertiesComponentData) {
+  constructor(
+    entityId: number,
+    public data: PhysicsPropertiesComponentData
+  ) {
     super(entityId)
   }
 }

@@ -16,6 +16,7 @@ export class OrbitCameraFollowSystem {
     CameraControls.install({ THREE: THREE })
     this.cameraControls = new CameraControls(camera, renderer.domElement)
     this.initializeCameraControls()
+    renderer.domElement.addEventListener('click', this.lockPointer.bind(this))
   }
 
   private initializeCameraControls(): void {
@@ -33,6 +34,14 @@ export class OrbitCameraFollowSystem {
 
     this.cameraControls.touches.two = CameraControls.ACTION.TOUCH_DOLLY
     this.cameraControls.touches.three = CameraControls.ACTION.TOUCH_DOLLY
+  }
+
+  private lockPointer(): void {
+    try {
+      this.cameraControls.lockPointer()
+    } catch {
+      // Canvas may have been removed from the DOM (e.g. during navigation)
+    }
   }
 
   private isDragging(): boolean {

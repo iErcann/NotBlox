@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity } from '../../../../shared/entity/Entity'
+import { Entity } from '@shared/entity/Entity'
 
 export class ScriptableSystem {
   // Static function that can be overridden by a script

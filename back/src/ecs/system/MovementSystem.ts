@@ -1,10 +1,10 @@
 import { InputComponent } from '../component/InputComponent.js'
-import { Entity } from '../../../../shared/entity/Entity.js'
+import { Entity } from '@shared/entity/Entity.js'
 import Rapier from '../../physics/rapier.js'
-import { PositionComponent } from '../../../../shared/component/PositionComponent.js'
+import { PositionComponent } from '@shared/component/PositionComponent.js'
 import { GroundCheckComponent } from '../component/GroundedComponent.js'
 import { DynamicRigidBodyComponent } from '../component/physics/DynamicRigidBodyComponent.js'
-import { VehicleOccupancyComponent } from '../../../../shared/component/VehicleOccupancyComponent.js'
+import { VehicleOccupancyComponent } from '@shared/component/VehicleOccupancyComponent.js'
 
 /**
  * System responsible for handling movement logic of entities.
