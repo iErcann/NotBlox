@@ -15,7 +15,9 @@
     "dev:front": "pnpm --filter @notblox/front run dev",
     "build-vercel": "pnpm run build:shared && pnpm run build:front",
     "build": "pnpm run build:shared && pnpm run build:back && pnpm run build:front",
-    "dev": "concurrently \"pnpm run dev:shared\" \"pnpm run dev:back\" \"pnpm run dev:front\""
+    "dev": "concurrently \"pnpm run dev:shared\" \"pnpm run dev:back\" \"pnpm run dev:front\"",
+    "lag:up": "sudo tc qdisc add dev lo root netem delay 100ms",
+    "lag:down": "sudo tc qdisc del dev lo root netem"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
