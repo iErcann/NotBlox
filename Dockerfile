@@ -34,9 +34,10 @@ RUN pnpm install --frozen-lockfile --prod
 #   source is needed for relative imports inside scripts (e.g. ../../../shared/system/...)
 COPY --from=build /app/shared ./shared/
 
-# Copy back source. tsx loads TypeScript at runtime, no tsc step needed.
+# Copy back source + tsconfig so tsx can resolve @shared/* path aliases at runtime.
 # To swap a script without rebuilding the image, volume-mount the scripts directory:
 #   docker run -v ./my-scripts:/app/back/src/scripts -e GAME_SCRIPT=myGame.ts ...
+COPY back/tsconfig.json ./back/
 COPY back/src ./back/src
 
 # Run from back/ so Node resolves tsx from back/node_modules
