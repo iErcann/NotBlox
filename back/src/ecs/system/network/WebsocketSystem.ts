@@ -4,6 +4,7 @@ import {
   HttpRequest,
   HttpResponse,
   SSLApp,
+  WebSocket,
   us_listen_socket,
   us_socket_context_t,
 } from 'uWebSockets.js'
@@ -38,7 +39,9 @@ import { EntityManager } from '@shared/system/EntityManager.js'
 import { MessageListComponent } from '@shared/component/MessageComponent.js'
 import { ChatComponent } from '../../component/tag/TagChatComponent.js'
 import { WebSocketComponent } from '../../component/WebsocketComponent.js'
-type MessageHandler = (ws: any, message: any) => void
+
+type PlayerData = { player?: Player }
+type MessageHandler = (ws: WebSocket<PlayerData>, message: ClientMessage) => void
 
 export class WebsocketSystem {
   private port: number = 8001
@@ -132,7 +135,7 @@ export class WebsocketSystem {
       res.end(JSON.stringify(healthData))
     })
 
-    app.ws('/*', {
+    app.ws<PlayerData>('/*', {
       idleTimeout: 32,
       maxBackpressure: 1024,
       maxPayloadLength: 512,
@@ -160,8 +163,8 @@ export class WebsocketSystem {
       return
     }
 
-    res.upgrade(
-      {}, // WebSocket handler will go here
+    res.upgrade<PlayerData>(
+      {},
       req.getHeader('sec-websocket-key'),
       req.getHeader('sec-websocket-protocol'),
       req.getHeader('sec-websocket-extensions'),
@@ -178,15 +181,21 @@ export class WebsocketSystem {
   }
 
   private initializeMessageHandlers() {
-    this.addMessageHandler(ClientMessageType.INPUT, this.handleInputMessage.bind(this))
-    this.addMessageHandler(ClientMessageType.CHAT_MESSAGE, this.handleChatMessage.bind(this))
+    this.addMessageHandler(
+      ClientMessageType.INPUT,
+      this.handleInputMessage.bind(this) as MessageHandler
+    )
+    this.addMessageHandler(
+      ClientMessageType.CHAT_MESSAGE,
+      this.handleChatMessage.bind(this) as MessageHandler
+    )
     this.addMessageHandler(
       ClientMessageType.PROXIMITY_PROMPT_INTERACT,
-      this.handleProximityPromptInteractMessage.bind(this)
+      this.handleProximityPromptInteractMessage.bind(this) as MessageHandler
     )
     this.addMessageHandler(
       ClientMessageType.SET_PLAYER_NAME,
-      this.handleSetPlayerNameMessage.bind(this)
+      this.handleSetPlayerNameMessage.bind(this) as MessageHandler
     )
   }
 
@@ -198,8 +207,8 @@ export class WebsocketSystem {
     this.messageHandlers.delete(type)
   }
 
-  private onMessage(ws: any, message: any) {
-    const clientMessage: ClientMessage = unpack(message)
+  private onMessage(ws: WebSocket<PlayerData>, message: ArrayBuffer) {
+    const clientMessage: ClientMessage = unpack(Buffer.from(message))
     const handler = this.messageHandlers.get(clientMessage.t)
     if (handler) {
       handler(ws, clientMessage)
@@ -209,12 +218,12 @@ export class WebsocketSystem {
   // TODO: Create EventOnPlayerConnect and EventOnPlayerDisconnect to respects ECS
   // Might be useful to query the chat and send a message to all players when a player connects or disconnects
   // Also could append scriptable events to be triggered on connect/disconnect depending on the game
-  private async onConnect(ws: any) {
+  private async onConnect(ws: WebSocket<PlayerData>) {
     const ipBuffer = ws.getRemoteAddressAsText() as ArrayBuffer
     const ip = Buffer.from(ipBuffer).toString()
     if (await this.isRateLimited(ip)) {
       // Respond to the client indicating that the connection is rate limited
-      return ws.close(429, 'Rate limit exceeded')
+      return ws.close()
     }
     const player = new Player(ws, Math.random() * 5, 5, Math.random() * 5)
     const connectionMessage: ConnectionMessage = {
@@ -223,7 +232,7 @@ export class WebsocketSystem {
       tickRate: config.SERVER_TICKRATE,
     }
     // player.entity.addComponent(new RandomizeComponent(player.entity.id))
-    ws.player = player
+    ws.getUserData().player = player
     ws.send(NetworkSystem.compress(connectionMessage), true)
 
     EventSystem.addEvent(
@@ -236,12 +245,12 @@ export class WebsocketSystem {
     this.players.push(player)
   }
 
-  private onDrain(ws: any) {
+  private onDrain(ws: WebSocket<PlayerData>) {
     console.log('WebSocket backpressure: ' + ws.getBufferedAmount())
   }
 
-  private onClose(ws: any) {
-    const disconnectedPlayer: Player = ws.player
+  private onClose(ws: WebSocket<PlayerData>) {
+    const disconnectedPlayer = ws.getUserData().player
     if (!disconnectedPlayer) {
       console.error('Disconnect: Player not found?', ws)
       return
@@ -260,8 +269,8 @@ export class WebsocketSystem {
     entity.removeComponent(WebSocketComponent)
   }
 
-  private async handleInputMessage(ws: any, message: InputMessage) {
-    const player: Player = ws.player
+  private handleInputMessage(ws: WebSocket<PlayerData>, message: InputMessage) {
+    const player = ws.getUserData().player
     if (!player) {
       console.error(`Player with WS ${ws} not found.`)
       return
@@ -283,9 +292,13 @@ export class WebsocketSystem {
     this.inputProcessingSystem.receiveInputPacket(player.entity, message)
   }
 
-  private handleChatMessage(ws: any, message: ChatMessage) {
+  private handleChatMessage(ws: WebSocket<PlayerData>, message: ChatMessage) {
     console.log('Chat message received', message)
-    const player: Player = ws.player
+    const player = ws.getUserData().player
+    if (!player) {
+      console.error(`Player with WS ${ws} not found.`)
+      return
+    }
 
     const { content } = message
     if (!content || typeof content !== 'string' || content.length === 0) {
@@ -301,8 +314,11 @@ export class WebsocketSystem {
 
     EventSystem.addEvent(new MessageEvent(player.entity.id, playerName, content))
   }
-  private handleProximityPromptInteractMessage(ws: any, message: ProximityPromptInteractMessage) {
-    const player: Player = ws.player
+  private handleProximityPromptInteractMessage(
+    ws: WebSocket<PlayerData>,
+    message: ProximityPromptInteractMessage
+  ) {
+    const player = ws.getUserData().player
     if (!player) {
       console.error(`Player with WS ${ws} not found.`)
       return
@@ -311,8 +327,8 @@ export class WebsocketSystem {
     EventSystem.addEvent(new ProximityPromptInteractEvent(player.entity.id, eId))
   }
 
-  private handleSetPlayerNameMessage(ws: any, message: SetPlayerNameMessage) {
-    const player: Player = ws.player
+  private handleSetPlayerNameMessage(ws: WebSocket<PlayerData>, message: SetPlayerNameMessage) {
+    const player = ws.getUserData().player
     if (!player) {
       console.error(`Player with WS ${ws} not found.`)
       return

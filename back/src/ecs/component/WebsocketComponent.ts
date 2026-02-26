@@ -1,4 +1,5 @@
 import { Component } from '@shared/component/Component.js'
+import type { WebSocket } from 'uWebSockets.js'
 
 export class WebSocketComponent extends Component {
   /**
@@ -10,7 +11,7 @@ export class WebSocketComponent extends Component {
    */
   constructor(
     entityId: number,
-    public ws: any,
+    public ws: WebSocket<unknown>,
     public isFirstSnapshotSent = false
   ) {
     super(entityId)
