@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  lint-typecheck:
+    name: Lint & Type-check (backend)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared
+        run: pnpm run build:shared
+
+      - name: Lint backend
+        run: pnpm --filter @notblox/back run lint
+
+      - name: Type-check backend
+        run: pnpm --filter @notblox/back run build
+
+  docker-smoke:
+    name: Docker build & smoke test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: notblox-game-server:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Start container
+        run: docker run -d --name smoke notblox-game-server:ci
+
+      - name: Wait for healthy
+        run: |
+          for i in $(seq 1 12); do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' smoke 2>/dev/null || echo 'missing')
+            echo "Attempt $i: $STATUS"
+            if [ "$STATUS" = "healthy" ]; then
+              echo "Container is healthy"
+              exit 0
+            fi
+            if [ "$STATUS" = "unhealthy" ]; then
+              echo "Container became unhealthy"
+              docker logs smoke
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "Timed out waiting for container to become healthy"
+          docker logs smoke
+          exit 1
+
+      - name: Print logs
+        if: always()
+        run: docker logs smoke
+
+      - name: Stop container
+        if: always()
+        run: docker rm -f smoke

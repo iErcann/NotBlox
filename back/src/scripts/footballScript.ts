@@ -78,17 +78,17 @@ function sendTargetedNotification(author: string, message: string, targetPlayerI
   )
 }
 
-function sendTargetedChat(author: string, message: string, targetPlayerIds: number[]) {
-  EventSystem.addEvent(
-    new MessageEvent(
-      chatEntity.id,
-      author,
-      message,
-      SerializedMessageType.TARGETED_CHAT,
-      targetPlayerIds
-    )
-  )
-}
+// function sendTargetedChat(author: string, message: string, targetPlayerIds: number[]) {
+//   EventSystem.addEvent(
+//     new MessageEvent(
+//       chatEntity.id,
+//       author,
+//       message,
+//       SerializedMessageType.TARGETED_CHAT,
+//       targetPlayerIds
+//     )
+//   )
+// }
 
 const updateScore = () => {
   sendGlobalChatMessage('⚽', `Score: 🔴 Red ${redScore} - ${blueScore} Blue 🔵`)

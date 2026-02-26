@@ -137,7 +137,7 @@ const cube = new Cube({
 })
 const proximityPromptComponent = new ProximityPromptComponent(cube.entity.id, {
   text: 'Press E to change color',
-  onInteract: (interactingEntity) => {
+  onInteract: () => {
     cube.entity
       .getComponent(DynamicRigidBodyComponent)!
       .body!.applyImpulse(new Rapier.Vector3(0, 5, 0), true)
@@ -171,7 +171,7 @@ for (let i = 1; i < 10; i++) {
   const y = 5
   const z = 20 * i
 
-  let wheelConfig: Record<string, number> = {}
+  let wheelConfig: Record<string, number>
   if (i < 5) {
     wheelConfig = {
       frontLeft: Math.max(1, i / 2.5),

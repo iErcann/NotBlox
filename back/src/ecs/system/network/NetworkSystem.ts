@@ -77,7 +77,7 @@ export class NetworkSystem {
   }
 
   // Broadcasts a message to all connected clients.
-  private broadcast(entities: Entity[], message: any): void {
+  private broadcast(entities: Entity[], message: Uint8Array): void {
     for (const entity of entities) {
       const websocketComponent = entity.getComponent(WebSocketComponent)
       if (websocketComponent) {

@@ -10,8 +10,8 @@
     "dev": "tsx watch src/sandbox.ts",
     "build": "tsc --noEmit",
     "start": "node --import tsx/esm src/sandbox.ts",
-    "lint": "eslint src/**/*.ts",
-    "format": "eslint src/**/*.ts --fix"
+    "lint": "eslint src/",
+    "format": "eslint src/ --fix"
   },
   "author": "iercann",
   "license": "MIT",
@@ -19,21 +19,23 @@
     "node": ">=24"
   },
   "overrides": {
-    "minimatch": "^10.2.1"
+    "minimatch": "^10.2.1",
+    "jiti": "latest"
   },
   "dependencies": {
-    "@notblox/shared": "workspace:*",
-    "tsx": "^4.0.0",
     "@dimforge/rapier3d-compat": "^0.14.0",
+    "@notblox/shared": "workspace:*",
     "dotenv": "^16.3.1",
     "msgpackr": "^1.9.9",
     "node-three-gltf": "^1.8.3",
     "pako": "^2.1.0",
     "rate-limiter-flexible": "^5.0.3",
     "three": "^0.183.0",
+    "tsx": "^4.0.0",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.57.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^24.0.0",
     "@types/pako": "^2.0.3",
     "@types/three": "^0.183.0",
@@ -42,6 +44,7 @@
     "@typescript-eslint/parser": "latest",
     "eslint": "latest",
     "globals": "latest",
+    "jiti": "^2.6.1",
     "typescript": "^5.7.3",
     "typescript-eslint": "latest"
   }

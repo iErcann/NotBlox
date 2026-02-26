@@ -17,11 +17,12 @@ import { ColorComponent } from '@shared/component/ColorComponent.js'
 import { ServerMeshComponent } from '@shared/component/ServerMeshComponent.js'
 import { TextComponent } from '@shared/component/TextComponent.js'
 import { PhysicsPropertiesComponent } from '../component/physics/PhysicsPropertiesComponent.js'
+import type { WebSocket } from 'uWebSockets.js'
 
 export class Player {
   entity: Entity
 
-  constructor(ws: WebSocket, initialX: number, initialY: number, initialZ: number) {
+  constructor(ws: WebSocket<unknown>, initialX: number, initialY: number, initialZ: number) {
     this.entity = EntityManager.createEntity(SerializedEntityType.PLAYER)
     // Tag
     const playerComponent = new PlayerComponent(this.entity.id)
