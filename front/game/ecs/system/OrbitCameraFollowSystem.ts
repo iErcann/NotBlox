@@ -38,7 +38,7 @@ export class OrbitCameraFollowSystem {
 
   private lockPointer(): void {
     try {
-      this.cameraControls.lockPointer()
+      //this.cameraControls.lockPointer()
     } catch {
       // Canvas may have been removed from the DOM (e.g. during navigation)
     }
