@@ -26,6 +26,7 @@
   "pnpm": {
     "overrides": {
       "flatted": "^3.4.2",
+      "minimatch@3": "^3.1.5",
       "minimatch@10": "^10.2.3",
       "picomatch@2": "^2.3.2",
       "picomatch@4": "^4.0.4",
