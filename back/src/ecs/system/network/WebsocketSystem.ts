@@ -3,7 +3,6 @@ import {
   DEDICATED_COMPRESSOR_3KB,
   HttpRequest,
   HttpResponse,
-  SSLApp,
   WebSocket,
   us_listen_socket,
   us_socket_context_t,
@@ -40,7 +39,7 @@ import { MessageListComponent } from '@shared/component/MessageComponent.js'
 import { ChatComponent } from '../../component/tag/TagChatComponent.js'
 import { WebSocketComponent } from '../../component/WebsocketComponent.js'
 
-type PlayerData = { player?: Player }
+type PlayerData = { player?: Player; ip?: string }
 type MessageHandler = (ws: WebSocket<PlayerData>, message: ClientMessage) => void
 
 export class WebsocketSystem {
@@ -70,25 +69,14 @@ export class WebsocketSystem {
   private initializeServer() {
     const isProduction = process.env.NODE_ENV === 'production'
     const acceptedOrigin: string | undefined = process.env.FRONTEND_URL
-    const sslKeyFile: string = process.env.SSL_KEY_FILE || '/etc/letsencrypt/live/npm-3/privkey.pem'
-    const sslCertFile: string = process.env.SSL_CERT_FILE || '/etc/letsencrypt/live/npm-3/cert.pem'
 
-    if (isProduction) {
-      console.log('NODE_ENV : Running in production mode')
-    } else {
-      console.log('NODE_ENV : Running in development mode')
-    }
+    console.log(`NODE_ENV : Running in ${isProduction ? 'production' : 'development'} mode`)
 
     if (acceptedOrigin) {
       console.log('FRONTEND_URL : Only accepting connections from origin:', acceptedOrigin)
     }
 
-    const app = isProduction
-      ? SSLApp({
-          key_file_name: sslKeyFile,
-          cert_file_name: sslCertFile,
-        })
-      : App()
+    const app = App()
 
     // Add health check endpoint
     app.get('/health', (res) => {
@@ -163,11 +151,22 @@ export class WebsocketSystem {
       return
     }
 
+    // Behind Caddy every socket reports the proxy's IP, so the rate limiter would
+    // throttle everyone as one. X-Real-IP carries the actual client; headers can
+    // only be read inside this upgrade callback, not later in open().
+    const forwardedIp = req.getHeader('x-real-ip')
+    const remoteIp = Buffer.from(res.getRemoteAddressAsText() as ArrayBuffer).toString()
+    const ip = forwardedIp || remoteIp
+
+    const secWebsocketKey = req.getHeader('sec-websocket-key')
+    const secWebsocketProtocol = req.getHeader('sec-websocket-protocol')
+    const secWebsocketExtensions = req.getHeader('sec-websocket-extensions')
+
     res.upgrade<PlayerData>(
-      {},
-      req.getHeader('sec-websocket-key'),
-      req.getHeader('sec-websocket-protocol'),
-      req.getHeader('sec-websocket-extensions'),
+      { ip },
+      secWebsocketKey,
+      secWebsocketProtocol,
+      secWebsocketExtensions,
       context
     )
   }
@@ -219,8 +218,9 @@ export class WebsocketSystem {
   // Might be useful to query the chat and send a message to all players when a player connects or disconnects
   // Also could append scriptable events to be triggered on connect/disconnect depending on the game
   private async onConnect(ws: WebSocket<PlayerData>) {
-    const ipBuffer = ws.getRemoteAddressAsText() as ArrayBuffer
-    const ip = Buffer.from(ipBuffer).toString()
+    const ip =
+      ws.getUserData().ip ??
+      Buffer.from(ws.getRemoteAddressAsText() as ArrayBuffer).toString()
     if (await this.isRateLimited(ip)) {
       // Respond to the client indicating that the connection is rate limited
       return ws.close()
