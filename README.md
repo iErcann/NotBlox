@@ -128,13 +128,14 @@ NODE_ENV=production
 GAME_TICKRATE=20 # Game tickrate in Hz (20Hz = 50ms)
 GAME_SCRIPT=defaultScript.ts # Script source file in back/src/scripts/
 
-# To prevent hijacking
+# To prevent hijacking. The WS upgrade handler rejects any Origin that
+# doesn't match this value when NODE_ENV=production
 FRONTEND_URL=https://www.notblox.online
-
-# To get WSS, set your path:
-SSL_KEY_FILE=/etc/letsencrypt/live/npm-3/privkey.pem
-SSL_CERT_FILE=/etc/letsencrypt/live/npm-3/cert.pem
 ```
+
+> **No TLS here.** The server always listens on plain `ws://` (port 8001).
+> [Caddy](https://caddyserver.com/) terminates HTTPS in production. See
+> [Production deployment](#production-deployment).
 
 #### Game Scripts
 
@@ -194,12 +195,45 @@ The `GAME_TICKRATE` setting controls how frequently the server updates game stat
 To configure the front end, set the `NEXT_PUBLIC_SERVER_URL` environment variable in your `.env.local` file:
 
 ```bash
-# Development
-NEXT_PUBLIC_SERVER_URL=ws://localhost
+# Development: points at a single local game server on port 8001
+NEXT_PUBLIC_SERVER_URL=ws://localhost:8001
 
-# Production (SSL Required)
+# Production: Caddy terminates TLS at the edge (no port)
 # NEXT_PUBLIC_SERVER_URL=wss://back.notblox.online
 ```
+
+The client appends the game's **slug** as a URL path (e.g. `/test`, `/obby`,
+`/football`, `/pet-simulator`), so the test server connection becomes
+`ws://localhost:8001/test` in dev and `wss://back.notblox.online/test` in
+production. Slugs are defined in `front/public/gameData.json` and must match the
+route names in the [`Caddyfile`](Caddyfile).
+
+## Production deployment
+
+Production runs entirely through [`docker-compose.yml`](docker-compose.yml). A
+single [Caddy](https://caddyserver.com/) container is the only thing exposed to
+the internet (ports `80`/`443`); it terminates TLS and reverse-proxies each game
+to its container over the internal Docker network.
+
+```
+                          ┌──────────────────────── Docker network ────────────────────────┐
+  browser  ──wss://───►   │   Caddy (:80/:443)                                              │
+  wss://back.notblox      │     /test          ──►  game_test_server:8001  (ws, plain)      │
+       .online/<slug>     │     /obby          ──►  game_obby_parkour:8001                  │
+                          │     /football      ──►  game_football:8001                      │
+                          │     /pet-simulator ──►  game_pet_simulator:8001                 │
+                          │   monitor-logs  ──►  http://game_*:8001/health (Discord alerts) │
+                          └─────────────────────────────────────────────────────────────────┘
+```
+
+Caddy obtains and renews Let's Encrypt certificates on its own and stores them in
+the `caddy_data` named volume, so the game servers never touch a certificate and
+speak plain `ws://` on `8001`. Games are selected by URL path; adding one means
+adding a service plus one `@matcher`/`handle` block in the [`Caddyfile`](Caddyfile).
+
+**DNS:** point an `A` record for `back.notblox.online` at the server. If you use
+Cloudflare, keep that record **DNS-only (grey cloud)** so Caddy can complete the
+HTTP-01 challenge; the orange-cloud proxy would intercept it.
 
 ## How to change the map
 

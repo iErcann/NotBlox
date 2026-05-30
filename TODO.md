@@ -1,8 +1,7 @@
 - lint backend + shared
 - use absolute imports in backend + shared
 - basic tests ?
-- iac?
-- use caddy + certbot for ssl
+- iac? (terraform; Caddy + docker-compose are now the declarative base to build on)
 - if one day it requires real ugc content, use wasm + quickjs
 - fix the car
 - fix the lighting
