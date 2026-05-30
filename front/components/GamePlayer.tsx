@@ -18,7 +18,7 @@ export default function GamePlayer({ playerName, ...gameInfo }: GamePlayerProps)
 
   useEffect(() => {
     async function initializeGame() {
-      const game = Game.getInstance(gameInfo.websocketPort, refContainer)
+      const game = Game.getInstance(gameInfo.slug, refContainer)
       game.hud.passChatState(setMessages)
       setGameInstance(game)
       try {
@@ -36,7 +36,7 @@ export default function GamePlayer({ playerName, ...gameInfo }: GamePlayerProps)
     }
 
     initializeGame()
-  }, [gameInfo.websocketPort, playerName])
+  }, [gameInfo.slug, playerName])
 
   return (
     <div className="fixed inset-0 w-full h-full">

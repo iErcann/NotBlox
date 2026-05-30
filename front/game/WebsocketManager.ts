@@ -19,10 +19,12 @@ export class WebSocketManager {
   private serverUrl: string
 
   timeSinceLastServerUpdate: number = 0
-  constructor(game: Game, port: number = 8001) {
-    // Set the serverUrl based on the environment
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? 'ws://localhost'
-    this.serverUrl = `${baseUrl}:${port}`
+  constructor(game: Game, path: string = 'test') {
+    // Prod: NEXT_PUBLIC_SERVER_URL=wss://back.notblox.online -> wss://back.notblox.online/<slug>
+    // Dev:  NEXT_PUBLIC_SERVER_URL=ws://localhost:8001         -> ws://localhost:8001/<slug>
+    // uWS app.ws('/*') accepts any path, so dev keeps working against a single backend.
+    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? 'ws://localhost:8001'
+    this.serverUrl = `${baseUrl.replace(/\/$/, '')}/${path}`
 
     this.addMessageHandler(ServerMessageType.FIRST_CONNECTION, (message) => {
       const connectionMessage = message as ConnectionMessage
