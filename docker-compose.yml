@@ -1,27 +1,19 @@
 services:
-  nginx_proxy_manager:
-    image: 'jc21/nginx-proxy-manager:latest'
+  caddy:
+    image: caddy:2-alpine
     restart: unless-stopped
     ports:
-      # These ports are in format <host-port>:<container-port>
-      - '80:80' # Public HTTP Port
-      - '443:443' # Public HTTPS Port
-      - '81:81' # Admin Web Port
-      # Add any other Stream port you want to expose
-      # - '21:21' # FTP
-
-    # Uncomment the next line if you uncomment anything in the section
-    # environment:
-    # Uncomment this if you want to change the location of
-    # the SQLite DB file within the container
-    # DB_SQLITE_FILE: "/data/database.sqlite"
-
-    # Uncomment this if IPv6 is not enabled on your host
-    # DISABLE_IPV6: 'true'
-
+      - '80:80'
+      - '443:443'
     volumes:
-      - ./data:/data
-      - /etc/letsencrypt:/etc/letsencrypt
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - game_test_server
+      - game_obby_parkour
+      - game_football
+      - game_pet_simulator
     logging:
       driver: 'json-file'
       options:
@@ -48,10 +40,8 @@ services:
       - GAME_TICKRATE=40 # Higher tickrate for vehicles
       - NODE_ENV=production
       - FRONTEND_URL=https://www.notblox.online
-    ports:
-      - '8001:8001'
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
+    expose:
+      - '8001'
     restart: unless-stopped
     logging:
       driver: 'json-file'
@@ -68,10 +58,8 @@ services:
       - GAME_TICKRATE=20 # Default tickrate
       - NODE_ENV=production
       - FRONTEND_URL=https://www.notblox.online
-    ports:
-      - '8002:8001'
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
+    expose:
+      - '8001'
     restart: unless-stopped
     logging:
       driver: 'json-file'
@@ -88,10 +76,8 @@ services:
       - GAME_TICKRATE=20
       - NODE_ENV=production
       - FRONTEND_URL=https://www.notblox.online
-    ports:
-      - '8003:8001'
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
+    expose:
+      - '8001'
     restart: unless-stopped
     logging:
       driver: 'json-file'
@@ -108,10 +94,8 @@ services:
       - GAME_TICKRATE=20
       - NODE_ENV=production
       - FRONTEND_URL=https://www.notblox.online
-    ports:
-      - '8004:8001'
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
+    expose:
+      - '8001'
     restart: unless-stopped
     logging:
       driver: 'json-file'
@@ -123,13 +107,19 @@ services:
     build: ./monitor
     environment:
       - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
-      - DOCKER_GATEWAY=https://172.17.0.1
       - CHECK_INTERVAL=10000
     restart: 'no'
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - game_test_server
+      - game_obby_parkour
+      - game_football
+      - game_pet_simulator
     logging:
       driver: 'json-file'
       options:
         max-size: '10m'
         max-file: '3'
+
+volumes:
+  caddy_data:
+  caddy_config:

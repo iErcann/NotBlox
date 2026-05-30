@@ -1,0 +1,74 @@
+back.notblox.online {
+	encode zstd gzip
+
+	# Path-based routing per game server.
+	# handle_path strips the matched prefix before forwarding, so the
+	# backend sees `/` for WS upgrade and `/health` for health checks.
+	# Each slug also has a companion exact-match redirect so naked
+	# /test (no trailing slash) lands on /test/ and avoids the
+	# `/test*` glob that would also match `/testing`.
+
+	handle_path /test/* {
+		reverse_proxy game_test_server:8001 {
+			flush_interval -1
+			transport http {
+				read_timeout 24h
+				write_timeout 24h
+			}
+			header_up X-Real-IP {client_ip}
+		}
+	}
+	handle_path /test {
+		redir /test/ 308
+	}
+
+	handle_path /obby/* {
+		reverse_proxy game_obby_parkour:8001 {
+			flush_interval -1
+			transport http {
+				read_timeout 24h
+				write_timeout 24h
+			}
+			header_up X-Real-IP {client_ip}
+		}
+	}
+	handle_path /obby {
+		redir /obby/ 308
+	}
+
+	handle_path /football/* {
+		reverse_proxy game_football:8001 {
+			flush_interval -1
+			transport http {
+				read_timeout 24h
+				write_timeout 24h
+			}
+			header_up X-Real-IP {client_ip}
+		}
+	}
+	handle_path /football {
+		redir /football/ 308
+	}
+
+	handle_path /pet-simulator/* {
+		reverse_proxy game_pet_simulator:8001 {
+			flush_interval -1
+			transport http {
+				read_timeout 24h
+				write_timeout 24h
+			}
+			header_up X-Real-IP {client_ip}
+		}
+	}
+	handle_path /pet-simulator {
+		redir /pet-simulator/ 308
+	}
+
+	respond /* "Not Found" 404
+
+	log {
+		output stdout
+		format console
+		level INFO
+	}
+}
