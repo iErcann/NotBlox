@@ -2,13 +2,24 @@ back.notblox.online {
 	encode zstd gzip
 
 	# Path-based routing per game server.
-	# handle_path strips the matched prefix before forwarding, so the
-	# backend sees `/` for WS upgrade and `/health` for health checks.
-	# Each slug also has a companion exact-match redirect so naked
-	# /test (no trailing slash) lands on /test/ and avoids the
-	# `/test*` glob that would also match `/testing`.
+	# Each matcher catches the bare slug AND anything under it, so both
+	# `wss://.../test` (no trailing slash — what WebsocketManager builds)
+	# and `https://.../test/health` reach the right backend. `uri strip_prefix`
+	# trims the slug before the request leaves Caddy, so the backend sees
+	# `/` for WS upgrade and `/health` for the health endpoint.
+	#
+	# A `handle_path /slug { redir /slug/ 308 }` companion would NOT work here
+	# because (a) Caddy logs that path as NOP — handle_path strips the prefix
+	# before `redir` evaluates its from-path, so the redirect never fires; and
+	# (b) WebSocket clients do not follow HTTP redirects, so even a working 308
+	# would break wss://.../<slug>.
+	#
+	# The two-token path matcher (`/test /test/*`) also avoids the `/test*`
+	# glob footgun that would have wrongly matched `/testing`.
 
-	handle_path /test/* {
+	@test path /test /test/*
+	handle @test {
+		uri strip_prefix /test
 		reverse_proxy game_test_server:8001 {
 			flush_interval -1
 			transport http {
@@ -18,11 +29,10 @@ back.notblox.online {
 			header_up X-Real-IP {client_ip}
 		}
 	}
-	handle_path /test {
-		redir /test/ 308
-	}
 
-	handle_path /obby/* {
+	@obby path /obby /obby/*
+	handle @obby {
+		uri strip_prefix /obby
 		reverse_proxy game_obby_parkour:8001 {
 			flush_interval -1
 			transport http {
@@ -32,11 +42,10 @@ back.notblox.online {
 			header_up X-Real-IP {client_ip}
 		}
 	}
-	handle_path /obby {
-		redir /obby/ 308
-	}
 
-	handle_path /football/* {
+	@football path /football /football/*
+	handle @football {
+		uri strip_prefix /football
 		reverse_proxy game_football:8001 {
 			flush_interval -1
 			transport http {
@@ -46,11 +55,10 @@ back.notblox.online {
 			header_up X-Real-IP {client_ip}
 		}
 	}
-	handle_path /football {
-		redir /football/ 308
-	}
 
-	handle_path /pet-simulator/* {
+	@pet path /pet-simulator /pet-simulator/*
+	handle @pet {
+		uri strip_prefix /pet-simulator
 		reverse_proxy game_pet_simulator:8001 {
 			flush_interval -1
 			transport http {
@@ -59,9 +67,6 @@ back.notblox.online {
 			}
 			header_up X-Real-IP {client_ip}
 		}
-	}
-	handle_path /pet-simulator {
-		redir /pet-simulator/ 308
 	}
 
 	respond /* "Not Found" 404
