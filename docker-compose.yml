@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
 
   game_test_server:
-    build: .
+    image: ghcr.io/iercann/notblox-game-server:latest
     labels:
       - com.centurylinklabs.watchtower.enable=true
     environment:
