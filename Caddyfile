@@ -1,21 +1,7 @@
 back.notblox.online {
 	encode zstd gzip
 
-	# Path-based routing per game server.
-	# Each matcher catches the bare slug AND anything under it, so both
-	# `wss://.../test` (no trailing slash — what WebsocketManager builds)
-	# and `https://.../test/health` reach the right backend. `uri strip_prefix`
-	# trims the slug before the request leaves Caddy, so the backend sees
-	# `/` for WS upgrade and `/health` for the health endpoint.
-	#
-	# A `handle_path /slug { redir /slug/ 308 }` companion would NOT work here
-	# because (a) Caddy logs that path as NOP — handle_path strips the prefix
-	# before `redir` evaluates its from-path, so the redirect never fires; and
-	# (b) WebSocket clients do not follow HTTP redirects, so even a working 308
-	# would break wss://.../<slug>.
-	#
-	# The two-token path matcher (`/test /test/*`) also avoids the `/test*`
-	# glob footgun that would have wrongly matched `/testing`.
+	# Two-token matcher (/slug + /slug/*, NOT /slug* — that'd catch /slugfoo) + strip_prefix
 
 	@test path /test /test/*
 	handle @test {
