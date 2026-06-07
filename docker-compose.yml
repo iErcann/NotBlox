@@ -20,21 +20,8 @@ services:
         max-size: '10m'
         max-file: '3'
 
-  watchtower:
-    image: containrrr/watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - DOCKER_API_VERSION=1.52
-      - WATCHTOWER_POLL_INTERVAL=300 # Check for updates every 5 minutes
-      - WATCHTOWER_CLEANUP=true # Remove old images after update
-      - WATCHTOWER_LABEL_ENABLE=true # Only watch services with a specific label
-    restart: unless-stopped
-
   game_test_server:
     image: ghcr.io/iercann/notblox-game-server:latest
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     environment:
       - GAME_SCRIPT=defaultScript.ts
       - GAME_TICKRATE=40 # Higher tickrate for vehicles
@@ -51,8 +38,6 @@ services:
 
   game_obby_parkour:
     image: ghcr.io/iercann/notblox-game-server:latest
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     environment:
       - GAME_SCRIPT=parkourScript.ts
       - GAME_TICKRATE=20 # Default tickrate
@@ -69,8 +54,6 @@ services:
 
   game_football:
     image: ghcr.io/iercann/notblox-game-server:latest
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     environment:
       - GAME_SCRIPT=footballScript.ts
       - GAME_TICKRATE=20
@@ -87,8 +70,6 @@ services:
 
   game_pet_simulator:
     image: ghcr.io/iercann/notblox-game-server:latest
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     environment:
       - GAME_SCRIPT=petSimulatorScript.ts
       - GAME_TICKRATE=20
