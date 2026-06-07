@@ -1,0 +1,71 @@
+back.notblox.online {
+	encode zstd gzip
+
+	# Path-based routing per game server.
+	# Each matcher catches the bare slug AND anything under it, so both
+	# `wss://.../test` (no trailing slash — what WebsocketManager builds)
+	# and `https://.../test/health` reach the right backend. `uri strip_prefix`
+	# trims the slug before the request leaves Caddy, so the backend sees
+	# `/` for WS upgrade and `/health` for the health endpoint.
+	#
+	# A `handle_path /slug { redir /slug/ 308 }` companion would NOT work here
+	# because (a) Caddy logs that path as NOP — handle_path strips the prefix
+	# before `redir` evaluates its from-path, so the redirect never fires; and
+	# (b) WebSocket clients do not follow HTTP redirects, so even a working 308
+	# would break wss://.../<slug>.
+	#
+	# The two-token path matcher (`/test /test/*`) also avoids the `/test*`
+	# glob footgun that would have wrongly matched `/testing`.
+
+	@test path /test /test/*
+	handle @test {
+		uri strip_prefix /test
+		reverse_proxy game_test_server:8001 {
+			flush_interval -1
+			stream_timeout 24h
+			stream_close_delay 5m
+			header_up X-Real-IP {client_ip}
+		}
+	}
+
+	@obby path /obby /obby/*
+	handle @obby {
+		uri strip_prefix /obby
+		reverse_proxy game_obby_parkour:8001 {
+			flush_interval -1
+			stream_timeout 24h
+			stream_close_delay 5m
+			header_up X-Real-IP {client_ip}
+		}
+	}
+
+	@football path /football /football/*
+	handle @football {
+		uri strip_prefix /football
+		reverse_proxy game_football:8001 {
+			flush_interval -1
+			stream_timeout 24h
+			stream_close_delay 5m
+			header_up X-Real-IP {client_ip}
+		}
+	}
+
+	@pet path /pet-simulator /pet-simulator/*
+	handle @pet {
+		uri strip_prefix /pet-simulator
+		reverse_proxy game_pet_simulator:8001 {
+			flush_interval -1
+			stream_timeout 24h
+			stream_close_delay 5m
+			header_up X-Real-IP {client_ip}
+		}
+	}
+
+	respond /* "Not Found" 404
+
+	log {
+		output stdout
+		format console
+		level INFO
+	}
+}

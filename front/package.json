@@ -15,19 +15,16 @@
     "lint": "next lint",
     "serve": "serve -s public/assets -l 4001 --cors"
   },
-  "overrides": {
-    "minimatch": "^10.2.1"
-  },
   "dependencies": {
     "@notblox/shared": "workspace:*",
     "@radix-ui/react-slot": "^1.1.1",
     "camera-controls": "^2.8.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "dompurify": "^3.2.4",
+    "dompurify": "^3.4.7",
     "lucide-react": "^0.473.0",
     "msgpackr": "^1.9.9",
-    "next": "^15.5.9",
+    "next": "^15.5.18",
     "pako": "^2.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -38,6 +35,7 @@
     "three": "^0.183.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
     "@tailwindcss/typography": "^0.5.16",
     "@types/dompurify": "^3.2.0",
     "@types/node": "^24.0.0",
@@ -46,8 +44,8 @@
     "@types/react-dom": "^19.0.0",
     "@types/three": "^0.183.0",
     "autoprefixer": "^10.4.20",
-    "concurrently": "^8.2.2",
-    "eslint": "^8.57.0",
+    "concurrently": "^10.0.0",
+    "eslint": "^9.39.4",
     "eslint-config-next": "^15.5.9",
     "postcss": "^8.5.1",
     "serve": "^14.2.5",

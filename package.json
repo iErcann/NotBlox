@@ -1,6 +1,7 @@
 {
   "name": "notblox-mono",
   "private": true,
+  "packageManager": "pnpm@9.15.0",
   "workspaces": [
     "shared",
     "front",
@@ -20,6 +21,18 @@
     "lag:down": "sudo tc qdisc del dev lo root netem"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^10.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "flatted": "^3.4.2",
+      "minimatch@3": "^3.1.5",
+      "minimatch@10": "^10.2.3",
+      "picomatch@2": "^2.3.2",
+      "picomatch@4": "^4.0.4",
+      "brace-expansion@1": "^1.1.13",
+      "brace-expansion@5": "^5.0.3",
+      "jiti": "^2.6.1"
+    }
   }
 }

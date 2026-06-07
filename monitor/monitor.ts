@@ -1,5 +1,3 @@
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
-
 // Load environment variables
 import * as dotenv from 'dotenv'
 dotenv.config()
@@ -11,13 +9,13 @@ if (!webhookUrl) {
   process.exit(1)
 }
 
-const dockerGateway = process.env.DOCKER_GATEWAY || 'https://172.17.0.1'
-// URLs to monitor (can be multiple game servers)
+// Reached over the Docker network using the compose service names; game servers
+// listen on plain HTTP internally (TLS is terminated by Caddy at the edge).
 const serversToMonitor = [
-  { name: '🟢 Default Test Server', url: `${dockerGateway}:8001/health` },
-  { name: '🔵 Obby Parkour', url: `${dockerGateway}:8002/health` },
-  { name: '⚽ Football', url: `${dockerGateway}:8003/health` },
-  { name: '🐶 Pet Simulator', url: `${dockerGateway}:8004/health` },
+  { name: '🟢 Default Test Server', url: 'http://game_test_server:8001/health' },
+  { name: '🔵 Obby Parkour', url: 'http://game_obby_parkour:8001/health' },
+  { name: '⚽ Football', url: 'http://game_football:8001/health' },
+  { name: '🐶 Pet Simulator', url: 'http://game_pet_simulator:8001/health' },
 ]
 
 // Check interval in milliseconds (default: 10 seconds)
